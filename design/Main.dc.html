@@ -900,8 +900,8 @@ function stepsOf(key) {
     return steps;
   }
   if (key === 'corridoio') return [
-    walk('Andata', 'Mettiti al punto 1. Premi Registra e cammina piano fino al punto 2.', [ar[0]]),
-    walk('Ritorno', 'Dal punto 2 premi Registra e torna al punto 1, camminando in avanti.', [ar[1]])
+    walk('Andata', 'Mettiti al punto 1 (Inizio del corridoio). Premi Registra e cammina piano fino al punto 2 (Fine del corridoio).', [ar[0]]),
+    walk('Ritorno', 'Dal punto 2 (Fine del corridoio) premi Registra e torna al punto 1 (Inizio del corridoio), camminando in avanti.', [ar[1]])
   ];
   if (key === 'scala-dritta') return [
     walk('Sali', 'Una mano sul corrimano. Dal punto 1 premi Registra e sali piano fino al punto 2.', [ar[0]]),
