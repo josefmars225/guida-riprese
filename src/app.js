@@ -82,9 +82,9 @@ let hideT = null;
 function status(trouble) {
   const el = $('#send'), p = pending();
   clearTimeout(hideT);
-  if (!Q.length) { el.hidden = true; return; }
-  el.hidden = false; el.classList.toggle('ok', !p.length); el.classList.toggle('err', !!trouble && !navigator.onLine);
-  if (!p.length) { $('#send-t').textContent = Q.length === 1 ? 'Video arrivato' : `Tutti i ${Q.length} video sono arrivati`; hideT = setTimeout(() => { el.hidden = true; }, 6000); return; }
+  if (!Q.length) { el.hidden = true; document.body.classList.remove('sending'); return; }
+  el.hidden = false; document.body.classList.add('sending'); el.classList.toggle('ok', !p.length); el.classList.toggle('err', !!trouble && !navigator.onLine);
+  if (!p.length) { $('#send-t').textContent = Q.length === 1 ? 'Video arrivato' : `Tutti i ${Q.length} video sono arrivati`; hideT = setTimeout(() => { el.hidden = true; document.body.classList.remove('sending'); }, 6000); return; }
   const tot = p.reduce((a, x) => a + x.size, 0), done = p.reduce((a, x) => a + x.sent, 0);
   const pct = tot ? Math.floor(done / tot * 100) : 0;
   $('#send-t').textContent = !navigator.onLine ? 'Invio in pausa: manca la connessione' : `Invio ${p.length === 1 ? 'del video' : `di ${p.length} video`} · ${pct}%`;

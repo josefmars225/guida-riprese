@@ -75,6 +75,8 @@ body { background: var(--ground); color: var(--ink); overflow-x: hidden; }
 :focus-visible { outline: 2px solid var(--champ); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 
+/* while the sending note is up, it takes the brand's place at the top */
+.sending #board .brand { opacity: 0; transition: opacity .3s; }
 /* never the phone's own play button over the meadow */
 #board video::-webkit-media-controls, #board video::-webkit-media-controls-start-playback-button, #board video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
 /* sending, shown over the guide while videos travel */
@@ -216,6 +218,8 @@ button.btn-p{border:0;cursor:pointer}
 /* Skipping a point: a quiet dashed line under the plan, never competing with Registra. */
 .skip-btn{display:flex;align-items:center;gap:9px;width:100%;margin-top:10px;min-height:40px;padding:8px 14px;box-sizing:border-box;border-radius:14px;background:rgba(255,255,255,.05);border:1px dashed rgba(243,235,221,.38);color:#F3EBDD;font:500 12.5px/1.35 Archivo,system-ui,sans-serif;text-align:left;cursor:pointer;transition:transform .25s cubic-bezier(.3,.7,.2,1)}
 .skip-btn:active{transform:scale(.98)}.skip-btn svg{flex:none}
+/* The brand, small at the very top: wide letters, pressed flat. */
+.brand{position:absolute;top:22px;left:0;right:0;margin:0;text-align:center;font:500 9px/1 Archivo,system-ui,sans-serif;font-stretch:125%;letter-spacing:.62em;text-indent:.62em;color:rgba(243,235,221,.86);transform:scaleY(.78);text-shadow:0 1px 8px rgba(10,8,4,.45);pointer-events:none}
 /* ---- Feedback ---- */
 .fb-pill{display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 15px;border-radius:999px;font-family:Archivo,system-ui,sans-serif;font-size:13px;font-weight:600;letter-spacing:.01em;white-space:nowrap}
 .fb-sheet{animation:posa-free 700ms linear backwards;--tilt:0deg}
@@ -277,6 +281,7 @@ button.btn-p{border:0;cursor:pointer}
   <video class="prato-video" src="media/prato-vento.mp4" autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline" preload="auto" aria-hidden="true"></video>
   <div aria-hidden="true" style="position: absolute; inset: 0; background: {{veilBg}}"></div>
   <div class="scr" style="position: relative; height: 100%; box-sizing: border-box; padding: 54px 20px 34px; display: flex; flex-direction: column">
+    <p class="brand" aria-label="Foretaste">FORETASTE</p>
     <header style="display: flex; justify-content: space-between; align-items: center; min-height: 44px">
       <sc-if value="{{ hasBack }}" hint-placeholder-val="{{ false }}">
         <button type="button" class="gl free icon-btn" style="--d: 0ms" aria-label="Indietro" onClick="{{ goBack }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5L8 12l6.5 6.5"></path></svg></button>
@@ -1863,9 +1868,9 @@ let hideT = null;
 function status(trouble) {
   const el = $('#send'), p = pending();
   clearTimeout(hideT);
-  if (!Q.length) { el.hidden = true; return; }
-  el.hidden = false; el.classList.toggle('ok', !p.length); el.classList.toggle('err', !!trouble && !navigator.onLine);
-  if (!p.length) { $('#send-t').textContent = Q.length === 1 ? 'Video arrivato' : `Tutti i ${Q.length} video sono arrivati`; hideT = setTimeout(() => { el.hidden = true; }, 6000); return; }
+  if (!Q.length) { el.hidden = true; document.body.classList.remove('sending'); return; }
+  el.hidden = false; document.body.classList.add('sending'); el.classList.toggle('ok', !p.length); el.classList.toggle('err', !!trouble && !navigator.onLine);
+  if (!p.length) { $('#send-t').textContent = Q.length === 1 ? 'Video arrivato' : `Tutti i ${Q.length} video sono arrivati`; hideT = setTimeout(() => { el.hidden = true; document.body.classList.remove('sending'); }, 6000); return; }
   const tot = p.reduce((a, x) => a + x.size, 0), done = p.reduce((a, x) => a + x.sent, 0);
   const pct = tot ? Math.floor(done / tot * 100) : 0;
   $('#send-t').textContent = !navigator.onLine ? 'Invio in pausa: manca la connessione' : `Invio ${p.length === 1 ? 'del video' : `di ${p.length} video`} · ${pct}%`;

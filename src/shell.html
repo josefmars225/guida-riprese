@@ -73,6 +73,8 @@ body { background: var(--ground); color: var(--ink); overflow-x: hidden; }
 :focus-visible { outline: 2px solid var(--champ); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 
+/* while the sending note is up, it takes the brand's place at the top */
+.sending #board .brand { opacity: 0; transition: opacity .3s; }
 /* never the phone's own play button over the meadow */
 #board video::-webkit-media-controls, #board video::-webkit-media-controls-start-playback-button, #board video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
 /* sending, shown over the guide while videos travel */
