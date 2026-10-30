@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2a2f1c">
+<title>Guida alle riprese</title>
+<script src="config.js"></script>
+__HELMET_LINKS__
+<style>
+/* The guide's own screen (the canvas artboard, 390 × 844) scaled to the phone; the real camera, sending and the archive sit over it. */
+:root {
+  color-scheme: dark;
+  --ground: #2a2f1c;
+  --ink: #F3EBDD;
+  --soft: rgba(243, 235, 221, .8);
+  --faint: rgba(243, 235, 221, .3);
+  --line: rgba(243, 235, 221, .16);
+  --champ: #D9C29A;
+  --champ-hi: #E6D3B0;
+  --deep: #17130C;
+  --pane: rgba(18, 15, 9, .5);
+  --rec: #E0583F;
+  --display: "Bodoni Moda", "Didot", "Times New Roman", serif;
+  --body: "Archivo", system-ui, -apple-system, sans-serif;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { background: var(--ground); color: var(--ink); overflow-x: hidden; }
+#stage { position: relative; margin: 0 auto; overflow: hidden; }
+#board { position: absolute; left: 0; top: 0; width: 390px; height: 844px; transform-origin: 0 0; }
+/* the screen takes the phone's own proportions: the artboard grows to the board's size, and so does the meadow seen through the glass */
+#board > .prato { width: 100% !important; height: 100% !important; }
+#board .lg-img { width: var(--bw, 390px) !important; height: var(--bh, 844px) !important; }
+.owner { display: flex; justify-content: center; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px 28px; }
+
+/* overlays: same glass, type and buttons as the guide */
+.ov { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgba(10, 8, 4, .62); font-family: var(--body); color: var(--ink); }
+.sheet { width: 100%; max-width: 440px; max-height: 100%; overflow-y: auto; box-sizing: border-box; border-radius: 30px 30px 0 0; padding: 24px max(20px, env(safe-area-inset-left, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 16px; background: rgba(28, 24, 16, .86); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); border: 1px solid rgba(255, 255, 255, .16); border-bottom: 0; box-shadow: inset 1.5px 1.5px 0 rgba(255, 255, 255, .3); animation: up 520ms cubic-bezier(.2, .75, .25, 1) backwards; }
+.sheet.full { min-height: 88%; }
+@keyframes up { from { transform: translateY(40px); opacity: 0; } }
+.o-lab { font-family: var(--body); font-stretch: 125%; font-weight: 500; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--champ); }
+.o-h { margin: 0; font-family: var(--display); font-weight: 400; font-size: 32px; line-height: 1.04; letter-spacing: -.012em; text-wrap: balance; }
+.o-h em { color: var(--champ-hi); }
+.o-p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--soft); }
+.o-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.o-x { width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center; cursor: pointer; color: var(--ink); background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .16); }
+.o-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 22px; border-radius: 999px; border: 0; font: 600 15px var(--body); cursor: pointer; flex: 1; transition: transform .25s cubic-bezier(.3, .7, .2, 1); }
+.o-btn:active { transform: scale(.965); }
+.o-btn.p { background: var(--champ); color: var(--deep); flex: 2; }
+.o-btn.g { background: rgba(255, 255, 255, .08); color: var(--ink); border: 1px solid rgba(255, 255, 255, .18); }
+.o-btn[disabled] { opacity: .5; cursor: default; }
+.o-row { display: flex; gap: 10px; }
+.o-link { background: none; border: 0; min-height: 44px; padding: 0; color: var(--soft); font: 500 13px var(--body); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; align-self: flex-start; }
+.o-video { display: block; width: 100%; max-height: 46vh; border-radius: 16px; background: #000; }
+.o-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--soft); font-variant-numeric: tabular-nums; }
+.o-bar { height: 3px; border-radius: 2px; background: var(--faint); overflow: hidden; }
+.o-bar span { display: block; height: 100%; background: var(--champ); transition: width .3s; }
+.o-in { width: 100%; box-sizing: border-box; min-height: 50px; border-radius: 16px; padding: 0 16px; font: 400 16px var(--body); color: var(--ink); background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .18); }
+.o-in::placeholder { color: rgba(243, 235, 221, .55); }
+.o-err { margin: 0; color: #F2B8A6; font-size: 14px; }
+.pill-o { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; font: 600 13px var(--body); color: var(--ink); cursor: pointer; background: rgba(18, 15, 9, .4); border: 1px solid rgba(255, 255, 255, .18); }
+.grp { display: flex; flex-direction: column; gap: 10px; }
+.item { border-radius: 20px; padding: 10px; display: flex; flex-direction: column; gap: 10px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); }
+.item-head { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; background: none; border: 0; padding: 0; text-align: left; color: var(--ink); cursor: pointer; font-family: var(--body); }
+.thumb { width: 76px; height: 76px; border-radius: 14px; object-fit: cover; background: rgba(18, 15, 9, .5); display: block; }
+.item-t { display: block; font-family: var(--display); font-size: 19px; line-height: 1.15; }
+.item-m { display: block; font-size: 12px; color: var(--soft); font-variant-numeric: tabular-nums; margin-top: 4px; }
+.fb-row { border-radius: 18px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .1); }
+.fb-stars { color: var(--champ); letter-spacing: .12em; font-size: 14px; }
+.empty { text-align: center; padding: 22px 10px; }
+.file-in { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+:focus-visible { outline: 2px solid var(--champ); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+
+/* sending, shown over the guide while videos travel */
+.send { position: fixed; left: 50%; transform: translateX(-50%); top: calc(5px + env(safe-area-inset-top, 0px)); z-index: 40; display: flex; align-items: center; gap: 9px; max-width: calc(100% - 32px); min-height: 28px; padding: 0 14px; border-radius: 999px; font: 600 12px var(--body); color: var(--ink); background: rgba(18, 15, 9, .62); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, .16); white-space: nowrap; }
+.send-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--champ); animation: blink 1.4s ease-in-out infinite; flex: none; }
+.send.ok .send-dot { animation: none; background: #B9D49A; }
+.send.err .send-dot { animation: none; background: var(--rec); }
+@keyframes blink { 50% { opacity: .3; } }
+/* the guide's own styles (from the canvas) */
+__HELMET_STYLE__
+</style>
+
+</head>
+<body>
+<template id="dc-tpl">__XDC__</template>
+<div id="stage"><div id="board"></div></div>
+<input class="file-in" id="gal" type="file" accept="video/*" aria-label="Scegli un video già fatto">
+<div class="send" id="send" hidden aria-live="polite"><span class="send-dot" aria-hidden="true"></span><span id="send-t"></span></div>
+<div class="ov" id="ov" hidden><section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="ov-title"></section></div>
+
+<script>
+// ---- A small runtime for the canvas file: holes, sc-if, sc-for, events and refs, patched in place so animations keep running. ----
+const DC = (() => {
+  const HOLE = /\{\{\s*([^}]*?)\s*\}\}/g, WHOLE = /^\s*\{\{\s*([^}]*?)\s*\}\}\s*$/;
+  const BOOL = new Set(['disabled', 'hidden', 'checked', 'readonly', 'required', 'autoplay', 'muted', 'loop', 'playsinline', 'open']);
+  const SKIP = new Set(['hint-placeholder-val', 'hint-placeholder-count', 'hint-size']);
+  function lit(p) {
+    if (p === 'true') return true; if (p === 'false') return false; if (p === 'null') return null;
+    if (/^-?\d+(\.\d+)?$/.test(p)) return Number(p);
+    if (/^(['"]).*\1$/.test(p)) return p.slice(1, -1);
+    return undefined;
+  }
+  function look(p, scopes) {
+    const l = lit(p); if (l !== undefined || p === 'null') return l;
+    const seg = p.split('.');
+    let base;
+    for (let i = scopes.length - 1; i >= 0; i--) if (scopes[i] && seg[0] in scopes[i]) { base = scopes[i][seg[0]]; break; }
+    for (let k = 1; k < seg.length && base != null; k++) base = base[seg[k]];
+    return base;
+  }
+  const str = (t, sc) => t.replace(HOLE, (_, p) => { const v = look(p, sc); return v == null ? '' : String(v); });
+  // the template, compiled once
+  function compile(node) {
+    if (node.nodeType === 3) return { text: node.nodeValue, dyn: node.nodeValue.includes('{{') };
+    if (node.nodeType !== 1) return null;
+    return { tag: node.localName, ns: node.namespaceURI, attrs: [...node.attributes].map((a) => ({ n: a.name, v: a.value })),
+      kids: [...node.childNodes].map(compile).filter(Boolean) };
+  }
+  function build(t, sc) {
+    if ('text' in t) return { text: t.dyn ? str(t.text, sc) : t.text };
+    if (t.tag === 'sc-if') {
+      const a = t.attrs.find((x) => x.n === 'value'), m = a && a.v.match(WHOLE);
+      return { tag: 'sc-if', ns: t.ns, attrs: {}, ev: {}, kids: m && look(m[1], sc) ? buildAll(t.kids, sc) : [] };
+    }
+    if (t.tag === 'sc-for') {
+      const la = t.attrs.find((x) => x.n === 'list'), as = (t.attrs.find((x) => x.n === 'as') || {}).v || 'item';
+      const m = la && la.v.match(WHOLE), list = (m && look(m[1], sc)) || [];
+      const kids = [];
+      list.forEach((it, i) => kids.push(...buildAll(t.kids, sc.concat([{ [as]: it, $index: i }]))));
+      return { tag: 'sc-for', ns: t.ns, attrs: {}, ev: {}, kids };
+    }
+    const v = { tag: t.tag, ns: t.ns, attrs: {}, ev: {}, kids: buildAll(t.kids, sc) };
+    t.attrs.forEach(({ n, v: raw }) => {
+      if (SKIP.has(n)) return;
+      const m = raw.match(WHOLE), val = m ? look(m[1], sc) : raw.includes('{{') ? str(raw, sc) : raw;
+      if (n.startsWith('on') && n.length > 2) { if (typeof val === 'function') v.ev[n === 'onchange' ? 'input' : n.slice(2)] = val; return; }
+      if (n === 'ref') { v.ref = val; return; }
+      if (n === 'value' && (t.tag === 'textarea' || t.tag === 'input')) { v.value = val == null ? '' : String(val); return; }
+      if (val === false || val == null) { if (BOOL.has(n) || val == null) return; v.attrs[n] = 'false'; return; }
+      v.attrs[n] = val === true ? (BOOL.has(n) ? '' : 'true') : String(val);
+    });
+    return v;
+  }
+  const buildAll = (ts, sc) => ts.map((t) => build(t, sc));
+  // patching
+  function create(v) {
+    if ('text' in v) return (v.dom = document.createTextNode(v.text));
+    const el = v.ns && v.ns !== 'http://www.w3.org/1999/xhtml' ? document.createElementNS(v.ns, v.tag) : document.createElement(v.tag);
+    v.dom = el; el.__ev = {};
+    setAttrs(el, {}, v.attrs); setEv(el, v.ev); if ('value' in v) el.value = v.value;
+    v.kids.forEach((k) => el.appendChild(create(k)));
+    if (v.tag === 'video') { el.muted = 'muted' in v.attrs; el.playsInline = true; if ('autoplay' in v.attrs) setTimeout(() => el.play && el.play().catch(() => {}), 0); }
+    return el;
+  }
+  function setAttrs(el, o, n) {
+    for (const k in o) if (!(k in n)) el.removeAttribute(k);
+    for (const k in n) if (o[k] !== n[k]) { try { el.setAttribute(k, n[k]); } catch (_) {} }
+  }
+  function setEv(el, ev) {
+    for (const k in ev) if (!el.__ev[k]) el.addEventListener(k, (e) => { const h = el.__ev[k]; if (h) h(e); });
+    for (const k in el.__ev) if (!(k in ev)) el.__ev[k] = null;
+    Object.assign(el.__ev, ev);
+  }
+  function refs(v, out) { if (v.kids) { if (v.ref) out.push([v.ref, v.dom]); v.kids.forEach((k) => refs(k, out)); } }
+  function drop(v) { const out = []; refs(v, out); out.forEach(([r]) => typeof r === 'function' && r(null)); }
+  function patch(parent, o, n) {
+    const len = Math.max(o.length, n.length);
+    for (let i = 0; i < len; i++) {
+      const a = o[i], b = n[i];
+      if (!b) { drop(a); a.dom.remove(); continue; }
+      if (!a) { parent.appendChild(create(b)); continue; }
+      const same = ('text' in a) === ('text' in b) && a.tag === b.tag && a.ns === b.ns;
+      if (!same) { drop(a); parent.replaceChild(create(b), a.dom); continue; }
+      b.dom = a.dom;
+      if ('text' in b) { if (a.text !== b.text) b.dom.nodeValue = b.text; continue; }
+      setAttrs(b.dom, a.attrs, b.attrs); setEv(b.dom, b.ev);
+      if ('value' in b && b.dom.value !== b.value) b.dom.value = b.value;
+      patch(b.dom, a.kids, b.kids);
+    }
+  }
+  function mount(root, tplEl, Component, props) {
+    const tpl = [...tplEl.content.childNodes].map(compile).filter(Boolean);
+    const comp = new Component(props);
+    let old = [], queued = false, mounted = false, prevState = null;
+    const render = () => {
+      queued = false;
+      const vals = comp.renderVals();
+      const now = buildAll(tpl, [vals]);
+      patch(root, old, now); old = now;
+      const out = []; now.forEach((v) => refs(v, out));
+      out.forEach(([r, el]) => { if (typeof r === 'function') r(el); else if (r && typeof r === 'object') r.current = el; });
+      if (!mounted) { mounted = true; comp.componentDidMount && comp.componentDidMount(); }
+      else comp.componentDidUpdate && comp.componentDidUpdate(comp.props, prevState);
+      prevState = comp.state;
+    };
+    comp.__schedule = () => { if (!queued) { queued = true; queueMicrotask(render); } };
+    render();
+    return comp;
+  }
+  return { mount };
+})();
+class DCLogic {
+  constructor(props) { this.props = props || {}; this.state = {}; }
+  setState(p, cb) {
+    const u = typeof p === 'function' ? p(this.state, this.props) : p;
+    this.state = Object.assign({}, this.state, u);
+    this.__schedule && this.__schedule();
+    if (cb) queueMicrotask(cb);
+  }
+  forceUpdate(cb) { this.__schedule && this.__schedule(); if (cb) queueMicrotask(cb); }
+}
+</script>
+<script>
+__COMPONENT__
+</script>
+__APP__
+</body>
+</html>

@@ -1,0 +1,100 @@
+/**
+ * Guida alle riprese — riceve nel tuo Google Drive i video e i feedback mandati dalla guida.
+ *
+ * Per ogni immobile crea una sottocartella nella cartella qui sotto; i video arrivano
+ * direttamente dal telefono del cliente a Drive (questo script apre solo il "passaggio"),
+ * quindi anche i video in 4K da centinaia di MB vanno bene.
+ */
+
+// L'ID della cartella Drive dove arrivano i video: è la parte finale del suo indirizzo,
+// https://drive.google.com/drive/folders/QUESTO_È_L_ID
+const FOLDER_ID = 'INCOLLA_QUI_L_ID_DELLA_CARTELLA';
+
+// L'indirizzo della guida: solo da qui si possono mandare i video.
+const ORIGIN = 'https://josefmars225.github.io';
+
+const MAX_SIZE = 4 * 1024 * 1024 * 1024;   // 4 GB per video
+
+function doPost(e) {
+  try {
+    const req = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    if (req.action === 'start') return out(start(req));
+    if (req.action === 'feedback') return out(feedback(req));
+    return out({ ok: false, error: 'azione sconosciuta' });
+  } catch (err) {
+    return out({ ok: false, error: String(err && err.message || err) });
+  }
+}
+
+// Aprendo l'indirizzo dello script nel browser si vede se è attivo.
+function doGet() {
+  DriveApp.getFolderById(FOLDER_ID);   // fallisce subito se l'ID è sbagliato
+  return out({ ok: true, guida: 'pronta' });
+}
+
+// Prepara l'arrivo di un video: crea il file in Drive e restituisce l'indirizzo
+// a cui il telefono manda il video, a pezzi.
+function start(req) {
+  const size = Number(req.size);
+  if (!(size > 0) || size > MAX_SIZE) throw new Error('dimensione del video non valida');
+  const type = /^video\/[\w.+-]+$/.test(req.type || '') ? req.type : 'video/mp4';
+  const folder = casaFolder(req.casa);
+  const res = UrlFetchApp.fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true', {
+    method: 'post',
+    contentType: 'application/json; charset=UTF-8',
+    muteHttpExceptions: true,
+    headers: {
+      Authorization: 'Bearer ' + ScriptApp.getOAuthToken(),
+      'X-Upload-Content-Type': type,
+      'X-Upload-Content-Length': String(size),
+      Origin: ORIGIN   // così il telefono può mandare i pezzi direttamente a Drive
+    },
+    payload: JSON.stringify({ name: clean(req.name, 'video.mp4'), parents: [folder.getId()] })
+  });
+  const headers = res.getHeaders();
+  const location = headers.Location || headers.location;
+  if (res.getResponseCode() !== 200 || !location) throw new Error('Drive non ha accettato il video (' + res.getResponseCode() + ')');
+  return { ok: true, location: location };
+}
+
+// Un feedback: una riga nel foglio "Feedback della guida", nella stessa cartella.
+function feedback(req) {
+  const rating = Math.max(1, Math.min(5, Math.round(Number(req.rating) || 0)));
+  const sheet = feedbackSheet();
+  sheet.appendRow([new Date(), clean(req.casa, ''), rating, String(req.text || '').slice(0, 1000)]);
+  return { ok: true };
+}
+
+function casaFolder(name) {
+  const root = DriveApp.getFolderById(FOLDER_ID);
+  const title = clean(name, 'Senza nome');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);   // due video della stessa casa insieme: una sola cartella
+  try {
+    const found = root.getFoldersByName(title);
+    return found.hasNext() ? found.next() : root.createFolder(title);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function feedbackSheet() {
+  const root = DriveApp.getFolderById(FOLDER_ID);
+  const files = root.getFilesByName('Feedback della guida');
+  if (files.hasNext()) return SpreadsheetApp.open(files.next()).getSheets()[0];
+  const ss = SpreadsheetApp.create('Feedback della guida');
+  DriveApp.getFileById(ss.getId()).moveTo(root);
+  const sheet = ss.getSheets()[0];
+  sheet.appendRow(['Quando', 'Immobile', 'Stelle', 'Commento']);
+  sheet.setFrozenRows(1);
+  return sheet;
+}
+
+function clean(s, fallback) {
+  const t = String(s || '').replace(/[\\/:*?"<>|\u0000-\u001f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 140);
+  return t || fallback;
+}
+
+function out(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
