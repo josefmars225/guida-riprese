@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prova scelta video · Guida alle riprese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&display=swap">
+<style>
+/* Four ways of asking the phone for a video: which menu leaves out «Fai un video» and still offers the photo library. */
+:root { color-scheme: dark; --ground: #23281a; --ink: #F3EBDD; --soft: rgba(243, 235, 221, .78); --line: rgba(243, 235, 221, .16); --champ: #D9C29A; --deep: #17130C;
+  --display: "Bodoni Moda", Didot, "Times New Roman", serif; --body: "Archivo", system-ui, -apple-system, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 15px/1.5 var(--body); padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+main { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.lab { font-stretch: 125%; font-weight: 500; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--champ); }
+h1 { margin: 0; font: 400 36px/1.04 var(--display); letter-spacing: -.012em; }
+h1 em { color: #E6D3B0; }
+p { margin: 0; color: var(--soft); }
+.card { border: 1px solid var(--line); background: rgba(255, 255, 255, .04); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.btn { display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 999px; padding: 0 22px; font: 600 15px var(--body); cursor: pointer; background: var(--champ); color: var(--deep); }
+.btn:focus-within { outline: 2px solid var(--ink); outline-offset: 3px; }
+input[type=file] { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.out { font-size: 13px; color: var(--soft); font-variant-numeric: tabular-nums; min-height: 20px; }
+.out.ok { color: #B9D49A; }
+</style>
+</head>
+<body>
+<main>
+  <span class="lab">Guida alle riprese · prova</span>
+  <h1>Quale menu <em>va bene?</em></h1>
+  <p>Tocca i quattro tasti uno alla volta. Per ognuno guarda il menu che compare: va bene se c'è <strong>Libreria foto</strong> e non c'è <strong>Fai un video</strong>. Poi scegli un video dalla libreria, per vedere se arriva. Nessun video viene inviato.</p>
+
+  <section class="card"><span class="lab">A · come adesso</span>
+    <label class="btn" for="a">Scegli il video · A</label><input id="a" type="file" accept="video/*"><p class="out" id="oa"></p></section>
+  <section class="card"><span class="lab">B · più video insieme</span>
+    <label class="btn" for="b">Scegli il video · B</label><input id="b" type="file" accept="video/*" multiple><p class="out" id="ob"></p></section>
+  <section class="card"><span class="lab">C · solo i formati video</span>
+    <label class="btn" for="c">Scegli il video · C</label><input id="c" type="file" accept="video/quicktime,video/mp4"><p class="out" id="oc"></p></section>
+  <section class="card"><span class="lab">D · per estensione</span>
+    <label class="btn" for="d">Scegli il video · D</label><input id="d" type="file" accept=".mov,.mp4,.m4v"><p class="out" id="od"></p></section>
+
+  <p>Poi scrivi a Claude, per ogni lettera: c'era «Libreria foto»? c'era «Fai un video»? il video è arrivato?</p>
+</main>
+<script>
+['a', 'b', 'c', 'd'].forEach((k) => {
+  document.getElementById(k).addEventListener('change', (e) => {
+    const fs = [...(e.target.files || [])], out = document.getElementById('o' + k);
+    out.className = 'out' + (fs.length ? ' ok' : '');
+    out.textContent = fs.length ? fs.map((f) => `${f.name} · ${(f.size / 1048576).toFixed(1)} MB · ${f.type || 'tipo non indicato'}`).join('  |  ') : 'nessun video scelto';
+  });
+});
+</script>
+</body>
+</html>
