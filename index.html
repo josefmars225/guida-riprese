@@ -1863,7 +1863,7 @@ async function sendOne(it) {
       else { it.location = null; it.sent = 0; }
     } catch (_) {}
   }
-  if (!it.location) { it.location = (await call('start', { casa: it.casa, name: it.name, type: it.type, size: it.size })).location; it.sent = 0; STORE.save(it).catch(() => {}); }
+  if (!it.location) { it.location = (await call('start', { casa: it.casa, name: it.name, type: it.type, size: it.size, origin: location.origin })).location; it.sent = 0; STORE.save(it).catch(() => {}); }
   const size = it.size;
   while (it.sent < size) {
     const end = Math.min(it.sent + PIECE, size);
