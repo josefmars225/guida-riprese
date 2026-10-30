@@ -527,9 +527,8 @@ button.btn-p{border:0;cursor:pointer}
             </div>
           </div>
         </div>
-        <div class="posa" style="--d: 150ms; margin-top: 24px">
-          <p class="lab" style="margin: 0; color: #D9C29A">{{ step.kicker }}</p>
-        </div>
+        <!-- How to film the step (kicker and the i. / ii. actions) is shown in the Registra sheet, not here. -->
+        <div style="height: 16px"></div>
       <h1 class="dsp" style="margin: 10px 0 0; font-size: 44px; line-height: 1.04; letter-spacing: -.012em">
         <span class="posa" style="--d: 200ms"><span data-suono="1" style="display: block">{{ step.t1 }}</span></span>
         <span class="posa" style="--d: 310ms"><span data-suono="2" style="display: block"><em>{{ step.t2 }}</em></span></span>
@@ -662,9 +661,6 @@ button.btn-p{border:0;cursor:pointer}
             </div>
           </figure>
         </div>
-        <ol style="list-style: none; margin: 16px 0 0; padding: 0 2px; text-shadow: 0 1px 12px rgba(12,10,6,.5)">
-          <sc-for list="{{ step.actions }}" as="a" hint-placeholder-count="2"><li class="posa" style="--d: {{a.d}}"><span style="display: grid; grid-template-columns: 30px 1fr; gap: 6px; padding: 6px 0; font-size: 15px; line-height: 1.45"><span class="dsp" style="font-style: italic; font-size: 17px; color: #D9C29A">{{a.n}}</span>{{a.t}}</span></li></sc-for>
-        </ol>
         <nav style="margin-top: auto; display: flex; gap: 10px">
           <div class="posa" style="--d: 560ms; flex: 1; display: flex">
             <button ref="{{ back.ref }}" type="button" class="btn lg" style="flex: 1; --h: {{back.h}}" onClick="{{ goBack }}">
