@@ -561,12 +561,7 @@ button.btn-p{border:0;cursor:pointer}
             </svg>
           </div>
               </div>
-              <div style="margin-top: 12px; display: flex; gap: 6px; align-items: center">
-                <div role="group" aria-label="Vista" style="display: flex; gap: 4px">
-                  <button type="button" class="pill seg-btn" aria-pressed="{{ step.planOn }}" onClick="{{ step.showPlan }}">Pianta</button>
-                  <button type="button" class="pill seg-btn" aria-pressed="{{ step.fpOn }}" onClick="{{ step.showFp }}">Prima persona</button>
-                </div>
-              </div>
+              <!-- The first-person view is off for now: the Pianta / Prima persona switch (FP_SWITCH in build_proto.py) brings it back. -->
               <sc-if value="{{ step.isTurn }}" hint-placeholder-val="{{ false }}">
                 <button type="button" class="skip-btn" onClick="{{ step.skip }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9C29A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5.5l7 6.5-7 6.5M12.5 5.5l7 6.5-7 6.5"></path></svg>Salta, punto troppo stretto o ostruito da un oggetto</button>
               </sc-if>

@@ -168,8 +168,31 @@ Component.prototype.feedbackVals = function () {
   return v;
 };
 
+// ---------- leaving the browser: the music stops (the client is going to the Camera app) and comes back after ----------
+document.addEventListener('visibilitychange', () => {
+  const a = window.__guidaMusica;
+  if (document.hidden) { if (a && !a.paused) { a.pause(); window.__guidaPausa = true; } return; }
+  if (window.__guidaPausa && comp && comp.musicOn()) comp.startMusic(comp.shared().time);
+  window.__guidaPausa = false;
+});
+
+// ---------- the meadow: with Low Power Mode the phone refuses to start videos by themselves, and shows its own
+// play button; then the still photo of the meadow stays, and the wind comes back at the first touch ----------
+function meadow() {
+  const v = document.querySelector('#board .prato-video');
+  if (!v) return;
+  v.muted = true; v.playsInline = true;
+  const p = v.play();
+  if (p && p.catch) p.catch(() => {
+    v.style.visibility = 'hidden';
+    const wake = () => v.play().then(() => { v.style.visibility = ''; }).catch(() => {});
+    document.addEventListener('pointerdown', wake, { once: true, capture: true });
+  });
+}
+
 // ---------- start ----------
 comp = DC.mount($('#board'), $('#dc-tpl'), Component, PROPS);
+meadow();
 fit();
 new MutationObserver(refit).observe($('#board'), { childList: true, subtree: true });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);

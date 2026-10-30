@@ -73,6 +73,8 @@ body { background: var(--ground); color: var(--ink); overflow-x: hidden; }
 :focus-visible { outline: 2px solid var(--champ); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 
+/* never the phone's own play button over the meadow */
+#board video::-webkit-media-controls, #board video::-webkit-media-controls-start-playback-button, #board video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
 /* sending, shown over the guide while videos travel */
 .send { position: fixed; left: 50%; transform: translateX(-50%); top: calc(5px + env(safe-area-inset-top, 0px)); z-index: 40; display: flex; align-items: center; gap: 9px; max-width: calc(100% - 32px); min-height: 28px; padding: 0 14px; border-radius: 999px; font: 600 12px var(--body); color: var(--ink); background: rgba(18, 15, 9, .62); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, .16); white-space: nowrap; }
 .send-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--champ); animation: blink 1.4s ease-in-out infinite; flex: none; }

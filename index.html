@@ -75,6 +75,8 @@ body { background: var(--ground); color: var(--ink); overflow-x: hidden; }
 :focus-visible { outline: 2px solid var(--champ); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 
+/* never the phone's own play button over the meadow */
+#board video::-webkit-media-controls, #board video::-webkit-media-controls-start-playback-button, #board video::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
 /* sending, shown over the guide while videos travel */
 .send { position: fixed; left: 50%; transform: translateX(-50%); top: calc(5px + env(safe-area-inset-top, 0px)); z-index: 40; display: flex; align-items: center; gap: 9px; max-width: calc(100% - 32px); min-height: 28px; padding: 0 14px; border-radius: 999px; font: 600 12px var(--body); color: var(--ink); background: rgba(18, 15, 9, .62); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, .16); white-space: nowrap; }
 .send-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--champ); animation: blink 1.4s ease-in-out infinite; flex: none; }
@@ -638,12 +640,7 @@ button.btn-p{border:0;cursor:pointer}
             </svg>
           </div>
               </div>
-              <div style="margin-top: 12px; display: flex; gap: 6px; align-items: center">
-                <div role="group" aria-label="Vista" style="display: flex; gap: 4px">
-                  <button type="button" class="pill seg-btn" aria-pressed="{{ step.planOn }}" onClick="{{ step.showPlan }}">Pianta</button>
-                  <button type="button" class="pill seg-btn" aria-pressed="{{ step.fpOn }}" onClick="{{ step.showFp }}">Prima persona</button>
-                </div>
-              </div>
+              <!-- The first-person view is off for now: the Pianta / Prima persona switch (FP_SWITCH in build_proto.py) brings it back. -->
               <sc-if value="{{ step.isTurn }}" hint-placeholder-val="{{ false }}">
                 <button type="button" class="skip-btn" onClick="{{ step.skip }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9C29A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5.5l7 6.5-7 6.5M12.5 5.5l7 6.5-7 6.5"></path></svg>Salta, punto troppo stretto o ostruito da un oggetto</button>
               </sc-if>
@@ -1941,8 +1938,31 @@ Component.prototype.feedbackVals = function () {
   return v;
 };
 
+// ---------- leaving the browser: the music stops (the client is going to the Camera app) and comes back after ----------
+document.addEventListener('visibilitychange', () => {
+  const a = window.__guidaMusica;
+  if (document.hidden) { if (a && !a.paused) { a.pause(); window.__guidaPausa = true; } return; }
+  if (window.__guidaPausa && comp && comp.musicOn()) comp.startMusic(comp.shared().time);
+  window.__guidaPausa = false;
+});
+
+// ---------- the meadow: with Low Power Mode the phone refuses to start videos by themselves, and shows its own
+// play button; then the still photo of the meadow stays, and the wind comes back at the first touch ----------
+function meadow() {
+  const v = document.querySelector('#board .prato-video');
+  if (!v) return;
+  v.muted = true; v.playsInline = true;
+  const p = v.play();
+  if (p && p.catch) p.catch(() => {
+    v.style.visibility = 'hidden';
+    const wake = () => v.play().then(() => { v.style.visibility = ''; }).catch(() => {});
+    document.addEventListener('pointerdown', wake, { once: true, capture: true });
+  });
+}
+
 // ---------- start ----------
 comp = DC.mount($('#board'), $('#dc-tpl'), Component, PROPS);
+meadow();
 fit();
 new MutationObserver(refit).observe($('#board'), { childList: true, subtree: true });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
