@@ -326,9 +326,19 @@ button.btn-p{border:0;cursor:pointer}
         <span class="posa" style="--d: 200ms"><span data-suono="1" style="display: block">{{ setup.t1 }}</span></span>
         <span class="posa" style="--d: 310ms"><span data-suono="2" style="display: block"><em>{{ setup.t2 }}</em></span></span>
       </h1>
+        <sc-if value="{{ setup.noteTop }}" hint-placeholder-val="{{ false }}">
+        <div class="posa" style="--d: 450ms; margin: 16px 2px 0">
+          <p style="margin: 0; display: flex; gap: 12px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: rgba(243,235,221,.9)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9C29A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>
+            <span><span class="lab" style="font-size: 9px; color: #D9C29A">Deve vedersi</span><br>{{ setup.note }}</span>
+          </p>
+        </div>
+        </sc-if>
+        <sc-if value="{{ setup.lead }}" hint-placeholder-val="{{ true }}">
         <div class="posa" style="--d: 450ms; margin-top: 14px">
           <p data-suono="3" style="margin: 0; font-size: 15px; line-height: 1.55; color: rgba(243,235,221,.9); max-width: 33ch">{{ setup.lead }}</p>
         </div>
+        </sc-if>
         <div class="posa l" style="--d: 590ms; margin-top: 22px">
           <section ref="{{ fig.ref }}" data-suono="4" class="lg" style="border-radius: 22px; padding: 18px 20px 8px; --h: {{fig.h}}">
             <span class="lg-refr f-fig" aria-hidden="true"><span class="lg-img" style="left: {{fig.l}}; top: {{fig.t}}; transform-origin: {{fig.ox}} {{fig.oy}}"></span></span>
@@ -341,7 +351,7 @@ button.btn-p{border:0;cursor:pointer}
             </div>
           </section>
         </div>
-        <sc-if value="{{ setup.note }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ setup.noteBottom }}" hint-placeholder-val="{{ true }}">
         <div class="posa" style="--d: 650ms; margin: 16px 2px 0">
           <p style="margin: 0; display: flex; gap: 12px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: rgba(243,235,221,.9)">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9C29A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>
@@ -1066,8 +1076,8 @@ const ICONS = {
 const SETUP = [
   { t1: 'Il telefono,', t2: 'pronto', lead: 'Riprendere tutta la casa chiede tempo e spazio. Meglio pensarci adesso.',
     items: ['Carica il telefono, o tienilo vicino a una presa.', 'Attiva «Non disturbare»: nessuna chiamata a metà ripresa.'], primary: 'Avanti' },
-  { icon: ICONS.lens, kicker: 'Lente 0,5×', t1: 'Sempre', t2: 'in verticale', lead: 'La guida usa la lente più ampia del telefono: nell’immagine entrano pavimento e soffitto.',
-    items: ['Tieni il telefono in verticale, all’altezza del petto.', 'Pulisci la lente con un panno morbido.', 'Niente filtri, flash o torcia.'],
+  { t1: 'Sempre', t2: 'in verticale', noteTop: true,
+    items: ['Tieni il telefono in verticale, all’altezza del petto.', 'Niente filtri, flash o torcia.'],
     note: 'Pavimento e soffitto nella stessa inquadratura.', primary: 'Avanti' },
   { icon: ICONS.sun, kicker: 'Giornata di sole · mattina – pomeriggio', t1: 'Tutta la luce', t2: 'possibile', lead: 'La luce del video sarà quella delle tue riprese. Scegli l’ora in cui la casa è più luminosa.',
     items: ['Alza tapparelle e persiane, sposta le tende.', 'Apri le porte interne degli spazi che riprenderai.', 'Sistema tutto come deve apparire. Da qui alla fine non si sposta più nulla.', 'Fai uscire persone e animali dagli spazi.'],
@@ -1654,6 +1664,7 @@ class Component extends DCLogic {
     if (sc.type === 'setup') {
       const s = SETUP[sc.i];
       v.setup = Object.assign({}, s, { items: s.items.map((t, i) => ({ n: ROMAN[i], t })), passo: `${sc.i + 1} / 3`, hasBack: sc.i > 0, noKicker: !s.kicker,
+        noteTop: !!(s.note && s.noteTop), noteBottom: !!(s.note && !s.noteTop),
         segs: [0, 1, 2].map((k) => ({ cls: k === sc.i ? 'seg-new' : '', bg: k <= sc.i ? '#D9C29A' : 'rgba(243,235,221,.3)' })),
         next: () => this.go(sc.i < 2 ? { type: 'setup', i: sc.i + 1 } : { type: 'perm' }) });
     }
