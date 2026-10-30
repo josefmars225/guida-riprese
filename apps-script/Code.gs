@@ -9,6 +9,8 @@
 // L'ID della cartella Drive dove arrivano i video: è la parte finale del suo indirizzo,
 // https://drive.google.com/drive/folders/QUESTO_È_L_ID
 const FOLDER_ID = 'INCOLLA_QUI_L_ID_DELLA_CARTELLA';
+// Se insieme all'ID è stato copiato altro dell'indirizzo (…?hl=it, …/view), qui si tiene solo l'ID.
+const FOLDER = FOLDER_ID.split(/[?#/]/)[0].trim();
 
 // L'indirizzo della guida: solo da qui si possono mandare i video.
 const ORIGIN = 'https://josefmars225.github.io';
@@ -28,7 +30,7 @@ function doPost(e) {
 
 // Aprendo l'indirizzo dello script nel browser si vede se è attivo.
 function doGet() {
-  DriveApp.getFolderById(FOLDER_ID);   // fallisce subito se l'ID è sbagliato
+  DriveApp.getFolderById(FOLDER);   // fallisce subito se l'ID è sbagliato
   return out({ ok: true, guida: 'pronta' });
 }
 
@@ -66,7 +68,7 @@ function feedback(req) {
 }
 
 function casaFolder(name) {
-  const root = DriveApp.getFolderById(FOLDER_ID);
+  const root = DriveApp.getFolderById(FOLDER);
   const title = clean(name, 'Senza nome');
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);   // due video della stessa casa insieme: una sola cartella
@@ -79,7 +81,7 @@ function casaFolder(name) {
 }
 
 function feedbackSheet() {
-  const root = DriveApp.getFolderById(FOLDER_ID);
+  const root = DriveApp.getFolderById(FOLDER);
   const files = root.getFilesByName('Feedback della guida');
   if (files.hasNext()) return SpreadsheetApp.open(files.next()).getSheets()[0];
   const ss = SpreadsheetApp.create('Feedback della guida');
