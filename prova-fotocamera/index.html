@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prova fotocamera · Guida alle riprese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&display=swap">
+<style>
+/* What the browser's camera can do on this phone: lenses, resolution, a 10-second take, the motion sensors. */
+:root { color-scheme: dark; --ground: #23281a; --ink: #F3EBDD; --soft: rgba(243, 235, 221, .78); --line: rgba(243, 235, 221, .16); --champ: #D9C29A; --deep: #17130C; --rec: #E0583F; --ok: #B9D49A;
+  --display: "Bodoni Moda", Didot, "Times New Roman", serif; --body: "Archivo", system-ui, -apple-system, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 15px/1.5 var(--body); padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+main { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.lab { font-stretch: 125%; font-weight: 500; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--champ); }
+h1 { margin: 0; font: 400 38px/1.04 var(--display); letter-spacing: -.012em; }
+h1 em { color: #E6D3B0; }
+p { margin: 0; color: var(--soft); }
+.card { border: 1px solid var(--line); background: rgba(255, 255, 255, .04); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.btn { min-height: 52px; border-radius: 999px; border: 0; padding: 0 22px; font: 600 15px var(--body); cursor: pointer; background: var(--champ); color: var(--deep); }
+.btn.g { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn[disabled] { opacity: .45; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row > .btn { flex: 1; }
+video { width: 100%; border-radius: 16px; background: #000; display: block; max-height: 60vh; object-fit: contain; }
+select { width: 100%; min-height: 48px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, .06); color: var(--ink); font: 15px var(--body); padding: 0 12px; }
+dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 14px; }
+dt { color: var(--soft); } dd { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.good { color: var(--ok); } .bad { color: #F2B8A6; }
+pre { margin: 0; white-space: pre-wrap; font: 12px/1.45 ui-monospace, Menlo, monospace; color: var(--soft); background: rgba(0, 0, 0, .25); border-radius: 12px; padding: 12px; max-height: 260px; overflow: auto; }
+.timer { font: 400 28px var(--display); font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--champ); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <span class="lab">Guida alle riprese · prova</span>
+  <h1>Cosa vede <em>il browser</em></h1>
+  <p>Questa pagina prova la fotocamera dentro il sito: quali lenti si possono usare, a che risoluzione registra, e i sensori per livella e avvisi. Nessun video viene inviato: resta sul telefono.</p>
+
+  <section class="card">
+    <span class="lab">1 · Fotocamera</span>
+    <button class="btn" id="start">Accendi la fotocamera</button>
+    <label for="cams" class="lab" style="color: var(--soft)">Lente</label>
+    <select id="cams" disabled><option>Prima accendi la fotocamera</option></select>
+    <video id="live" playsinline muted autoplay></video>
+    <dl id="info"><dt>Stato</dt><dd>spenta</dd></dl>
+  </section>
+
+  <section class="card">
+    <span class="lab">2 · Registra 10 secondi</span>
+    <div class="row"><button class="btn" id="rec" disabled>Registra</button></div>
+    <span class="timer" id="timer" aria-live="polite">0:00</span>
+    <video id="take" controls playsinline hidden></video>
+    <dl id="takeInfo"><dt>Video</dt><dd>ancora nessuno</dd></dl>
+  </section>
+
+  <section class="card">
+    <span class="lab">3 · Sensori</span>
+    <button class="btn g" id="sens">Prova livella e movimento</button>
+    <dl id="sensInfo"><dt>Inclinazione</dt><dd>—</dd><dt>Rotazione</dt><dd>—</dd></dl>
+  </section>
+
+  <section class="card">
+    <span class="lab">Risultato da mandare a Claude</span>
+    <pre id="report">Fai le prove 1, 2 e 3, poi copia questo testo.</pre>
+    <button class="btn g" id="copy">Copia il risultato</button>
+  </section>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const R = { device: navigator.userAgent, lenses: [], ultra: null, settings: null, caps: null, take: null, sensors: null, errors: [] };
+let stream = null, rec = null;
+const dl = (el, rows) => { el.innerHTML = rows.map(([k, v, c]) => `<dt>${k}</dt><dd class="${c || ''}">${v}</dd>`).join(''); };
+function report() {
+  const L = [];
+  L.push('Telefono: ' + R.device);
+  L.push('Lenti: ' + (R.lenses.length ? R.lenses.join(' | ') : 'non lette'));
+  L.push('Grandangolare 0,5×: ' + (R.ultra || 'non trovata'));
+  if (R.settings) L.push(`In uso: ${R.settings.width}×${R.settings.height} a ${Math.round(R.settings.frameRate || 0)} fps`);
+  if (R.caps) L.push(`Massimo: ${R.caps.width ? R.caps.width.max : '?'}×${R.caps.height ? R.caps.height.max : '?'}` + (R.caps.zoom ? `, zoom ${R.caps.zoom.min}–${R.caps.zoom.max}` : ', zoom non disponibile'));
+  if (R.take) L.push(`Video: ${R.take.w}×${R.take.h}, ${R.take.dur} s, ${R.take.mb} MB (${R.take.rate} MB/s), formato ${R.take.type}`);
+  if (R.sensors) L.push('Sensori: ' + R.sensors);
+  if (R.errors.length) L.push('Errori: ' + R.errors.join(' | '));
+  $('#report').textContent = L.join('\n');
+}
+async function open(deviceId) {
+  if (stream) stream.getTracks().forEach((t) => t.stop());
+  const video = { width: { ideal: 3840 }, height: { ideal: 2160 }, frameRate: { ideal: 30 } };
+  if (deviceId) video.deviceId = { exact: deviceId }; else video.facingMode = { ideal: 'environment' };
+  stream = await navigator.mediaDevices.getUserMedia({ video, audio: true });
+  $('#live').srcObject = stream;
+  const track = stream.getVideoTracks()[0];
+  R.settings = track.getSettings();
+  R.caps = track.getCapabilities ? track.getCapabilities() : null;
+  // Android: the wide lens often shows as zoom below 1 on the main camera
+  if (R.caps && R.caps.zoom && R.caps.zoom.min < 1) {
+    try { await track.applyConstraints({ advanced: [{ zoom: R.caps.zoom.min }] }); R.ultra = R.ultra || `zoom ${R.caps.zoom.min} sulla fotocamera principale`; } catch (e) { R.errors.push('zoom: ' + e.name); }
+  }
+  const s = R.settings, full = Math.min(s.width, s.height) >= 2160 ? '4K' : Math.min(s.width, s.height) >= 1080 ? 'Full HD' : 'sotto il Full HD';
+  dl($('#info'), [['Lente', track.label || '—'], ['Risoluzione', `${s.width} × ${s.height} · ${full}`, full === 'sotto il Full HD' ? 'bad' : 'good'], ['Fotogrammi', Math.round(s.frameRate || 0) + ' al secondo'],
+    ['Massimo possibile', R.caps && R.caps.width ? `${R.caps.width.max} × ${R.caps.height.max}` : 'non indicato'], ['Zoom', R.caps && R.caps.zoom ? `${R.caps.zoom.min}–${R.caps.zoom.max}` : 'non disponibile']]);
+  $('#rec').disabled = false;
+  report();
+}
+$('#start').addEventListener('click', async () => {
+  try {
+    await open();
+    const devs = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput');
+    R.lenses = devs.map((d) => d.label || 'senza nome');
+    const ultra = devs.find((d) => /ultra|grandangol|0[.,]5/i.test(d.label));
+    if (ultra) R.ultra = ultra.label;
+    $('#cams').innerHTML = devs.map((d) => `<option value="${d.deviceId}">${d.label || 'Fotocamera'}</option>`).join('');
+    $('#cams').disabled = false;
+    if (ultra) { $('#cams').value = ultra.deviceId; await open(ultra.deviceId); }
+    $('#start').textContent = 'Fotocamera accesa';
+  } catch (e) { R.errors.push('fotocamera: ' + e.name + ' ' + e.message); dl($('#info'), [['Stato', 'non si accende: ' + e.name, 'bad']]); }
+  report();
+});
+$('#cams').addEventListener('change', (e) => open(e.target.value).catch((err) => { R.errors.push('cambio lente: ' + err.name); report(); }));
+$('#rec').addEventListener('click', () => {
+  const types = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+  const mimeType = types.find((t) => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+  const chunks = [];
+  try { rec = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 25000000 }); } catch (e) { R.errors.push('registrazione: ' + e.name); report(); return; }
+  rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  rec.onstop = () => {
+    const blob = new Blob(chunks, { type: rec.mimeType || mimeType || 'video/mp4' }), v = $('#take');
+    v.src = URL.createObjectURL(blob); v.hidden = false;
+    v.onloadedmetadata = () => {
+      const dur = isFinite(v.duration) ? v.duration : 10, mb = blob.size / 1048576;
+      R.take = { w: v.videoWidth, h: v.videoHeight, dur: dur.toFixed(1), mb: mb.toFixed(1), rate: (mb / dur).toFixed(2), type: blob.type };
+      dl($('#takeInfo'), [['Risoluzione', `${v.videoWidth} × ${v.videoHeight}`], ['Durata', dur.toFixed(1) + ' s'], ['Peso', mb.toFixed(1) + ' MB'], ['Al secondo', (mb / dur).toFixed(2) + ' MB'], ['Formato', blob.type]]);
+      report();
+    };
+  };
+  rec.start(1000);
+  $('#rec').disabled = true;
+  let t = 0; $('#timer').textContent = '0:00';
+  const iv = setInterval(() => { t++; $('#timer').textContent = '0:' + String(t).padStart(2, '0'); if (t >= 10) { clearInterval(iv); rec.stop(); $('#rec').disabled = false; } }, 1000);
+});
+$('#sens').addEventListener('click', async () => {
+  try {
+    if (window.DeviceOrientationEvent && DeviceOrientationEvent.requestPermission) { const p = await DeviceOrientationEvent.requestPermission(); if (p !== 'granted') throw new Error('permesso negato'); }
+    if (window.DeviceMotionEvent && DeviceMotionEvent.requestPermission) { await DeviceMotionEvent.requestPermission(); }
+    let got = { o: false, m: false }, tilt = '—', spin = '—';
+    window.addEventListener('deviceorientation', (e) => { got.o = true; tilt = Math.round(e.gamma) + '°'; dl($('#sensInfo'), [['Inclinazione', tilt], ['Rotazione', spin]]); });
+    window.addEventListener('devicemotion', (e) => { if (!e.rotationRate) return; got.m = true; spin = Math.round(Math.abs(e.rotationRate.alpha || 0)) + '°/s'; });
+    setTimeout(() => { R.sensors = `livella ${got.o ? 'sì' : 'no'}, velocità di rotazione ${got.m ? 'sì' : 'no'}`; report(); }, 3000);
+    $('#sens').textContent = 'Inclina e gira il telefono…';
+  } catch (e) { R.sensors = 'non disponibili (' + e.message + ')'; report(); }
+});
+$('#copy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('#report').textContent); $('#copy').textContent = 'Copiato'; }
+  catch (_) { const r = document.createRange(); r.selectNodeContents($('#report')); getSelection().removeAllRanges(); getSelection().addRange(r); $('#copy').textContent = 'Selezionato: copialo tu'; }
+});
+report();
+</script>
+</body>
+</html>
