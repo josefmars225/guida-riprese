@@ -12,8 +12,8 @@ const FOLDER_ID = 'INCOLLA_QUI_L_ID_DELLA_CARTELLA';
 // Se insieme all'ID è stato copiato altro dell'indirizzo (…?hl=it, …/view), qui si tiene solo l'ID.
 const FOLDER = FOLDER_ID.split(/[?#/]/)[0].trim();
 
-// L'indirizzo della guida: solo da qui si possono mandare i video.
-const ORIGIN = 'https://josefmars225.github.io';
+// Gli indirizzi della guida: solo da qui si possono mandare i video.
+const ORIGINS = ['https://foretaste.github.io', 'https://josefmars225.github.io'];
 
 const MAX_SIZE = 4 * 1024 * 1024 * 1024;   // 4 GB per video
 
@@ -49,7 +49,7 @@ function start(req) {
       Authorization: 'Bearer ' + ScriptApp.getOAuthToken(),
       'X-Upload-Content-Type': type,
       'X-Upload-Content-Length': String(size),
-      Origin: ORIGIN   // così il telefono può mandare i pezzi direttamente a Drive
+      Origin: ORIGINS.indexOf(req.origin) >= 0 ? req.origin : ORIGINS[0]   // così il telefono può mandare i pezzi direttamente a Drive
     },
     payload: JSON.stringify({ name: clean(req.name, 'video.mp4'), parents: [folder.getId()] })
   });
