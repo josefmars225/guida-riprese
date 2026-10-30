@@ -237,9 +237,12 @@ button.btn-p{border:0;cursor:pointer}
             </div>
           </div>
         </div>
+        <sc-if value="{{ setup.kicker }}" hint-placeholder-val="{{ true }}">
         <div class="posa" style="--d: 150ms; margin-top: 26px">
           <p class="lab" style="margin: 0; display: flex; align-items: center; gap: 10px; color: #D9C29A"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ setup.icon }}"></path></svg>{{ setup.kicker }}</p>
         </div>
+        </sc-if>
+        <sc-if value="{{ setup.noKicker }}" hint-placeholder-val="{{ false }}"><div style="height: 18px"></div></sc-if>
       <h1 class="dsp" style="margin: 10px 0 0; font-size: 46px; line-height: 1.04; letter-spacing: -.012em">
         <span class="posa" style="--d: 200ms"><span data-suono="1" style="display: block">{{ setup.t1 }}</span></span>
         <span class="posa" style="--d: 310ms"><span data-suono="2" style="display: block"><em>{{ setup.t2 }}</em></span></span>
@@ -259,12 +262,14 @@ button.btn-p{border:0;cursor:pointer}
             </div>
           </section>
         </div>
+        <sc-if value="{{ setup.note }}" hint-placeholder-val="{{ true }}">
         <div class="posa" style="--d: 650ms; margin: 16px 2px 0">
           <p style="margin: 0; display: flex; gap: 12px; align-items: flex-start; font-size: 13px; line-height: 1.5; color: rgba(243,235,221,.9)">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9C29A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>
             <span><span class="lab" style="font-size: 9px; color: #D9C29A">Deve vedersi</span><br>{{ setup.note }}</span>
           </p>
         </div>
+        </sc-if>
         <nav style="margin-top: auto; display: flex; gap: 10px">
           <sc-if value="{{ setup.hasBack }}" hint-placeholder-val="{{ false }}">
           <div class="posa" style="--d: 710ms; flex: 1; display: flex">
@@ -852,9 +857,8 @@ const ICONS = {
   sun: 'M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'
 };
 const SETUP = [
-  { icon: ICONS.phone, kicker: 'Batteria e memoria', t1: 'Il telefono,', t2: 'pronto', lead: 'Riprendere tutta la casa chiede tempo e spazio. Meglio pensarci adesso.',
-    items: ['Carica il telefono, o tienilo vicino a una presa.', 'Libera almeno 5 GB di memoria.', 'Attiva «Non disturbare»: nessuna chiamata a metà ripresa.'],
-    note: 'Ogni spazio ripreso dall’inizio alla fine, senza interruzioni.', primary: 'Avanti' },
+  { t1: 'Il telefono,', t2: 'pronto', lead: 'Riprendere tutta la casa chiede tempo e spazio. Meglio pensarci adesso.',
+    items: ['Carica il telefono, o tienilo vicino a una presa.', 'Attiva «Non disturbare»: nessuna chiamata a metà ripresa.'], primary: 'Avanti' },
   { icon: ICONS.lens, kicker: 'Lente 0,5×', t1: 'Sempre', t2: 'in verticale', lead: 'La guida usa la lente più ampia del telefono: nell’immagine entrano pavimento e soffitto.',
     items: ['Tieni il telefono in verticale, all’altezza del petto.', 'Pulisci la lente con un panno morbido.', 'Niente filtri, flash o torcia.'],
     note: 'Pavimento e soffitto nella stessa inquadratura.', primary: 'Avanti' },
@@ -1442,7 +1446,7 @@ class Component extends DCLogic {
     };
     if (sc.type === 'setup') {
       const s = SETUP[sc.i];
-      v.setup = Object.assign({}, s, { items: s.items.map((t, i) => ({ n: ROMAN[i], t })), passo: `${sc.i + 1} / 3`, hasBack: sc.i > 0,
+      v.setup = Object.assign({}, s, { items: s.items.map((t, i) => ({ n: ROMAN[i], t })), passo: `${sc.i + 1} / 3`, hasBack: sc.i > 0, noKicker: !s.kicker,
         segs: [0, 1, 2].map((k) => ({ cls: k === sc.i ? 'seg-new' : '', bg: k <= sc.i ? '#D9C29A' : 'rgba(243,235,221,.3)' })),
         next: () => this.go(sc.i < 2 ? { type: 'setup', i: sc.i + 1 } : { type: 'perm' }) });
     }
