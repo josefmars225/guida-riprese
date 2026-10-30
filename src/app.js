@@ -162,7 +162,7 @@ const _fb = Component.prototype.feedbackVals;
 Component.prototype.feedbackVals = function () {
   const v = _fb.call(this), fb = (this.state && this.state.fb) || {}, send = v.send;
   v.send = () => {
-    if (fb.rating && !fb.sent && CFG.scriptUrl) call('feedback', { rating: fb.rating, text: String(fb.text || '').slice(0, 1000), casa: casa() }).catch(() => {});
+    if (fb.rating && !fb.sent && CFG.scriptUrl) call('feedback', { rating: fb.rating, text: String(fb.text || '').slice(0, 1000), casa: casa() }).catch((e) => console.warn('feedback non inviato:', e));
     send();
   };
   return v;

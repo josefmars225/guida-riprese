@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2a2f1c">
 <title>Guida alle riprese</title>
-<script src="config.js"></script>
+<script src="config.js?v=0c99e2d2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&amp;family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&amp;family=GFS+Didot&amp;display=swap">
@@ -1948,7 +1948,7 @@ const _fb = Component.prototype.feedbackVals;
 Component.prototype.feedbackVals = function () {
   const v = _fb.call(this), fb = (this.state && this.state.fb) || {}, send = v.send;
   v.send = () => {
-    if (fb.rating && !fb.sent && CFG.scriptUrl) call('feedback', { rating: fb.rating, text: String(fb.text || '').slice(0, 1000), casa: casa() }).catch(() => {});
+    if (fb.rating && !fb.sent && CFG.scriptUrl) call('feedback', { rating: fb.rating, text: String(fb.text || '').slice(0, 1000), casa: casa() }).catch((e) => console.warn('feedback non inviato:', e));
     send();
   };
   return v;

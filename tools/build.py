@@ -33,5 +33,9 @@ html = (shell.replace("__HELMET_LINKS__", "\n".join(re.findall(r"<link[^>]*>", h
              .replace("__XDC__", body).replace("__COMPONENT__", component)
              .replace("__APP__", "<script>\n" + app + "</script>"))
 assert not re.search(r"__[A-Z]+__", html), "a placeholder was left"
+# config.js changes on its own (the script address): its name carries its content's hash, so a phone never keeps an old one
+import hashlib
+ver = hashlib.sha1((ROOT / "config.js").read_bytes()).hexdigest()[:8]
+html = html.replace('<script src="config.js"></script>', f'<script src="config.js?v={ver}"></script>', 1)
 (ROOT / "index.html").write_text(html, encoding="utf-8")
 print("index.html", len(html), "bytes")
