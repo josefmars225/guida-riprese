@@ -154,13 +154,13 @@ function drawRec(err) {
     <ol style="list-style: none; margin: 0; padding: 0">
       ${li('i.', 'Apri l’app <strong>Fotocamera</strong>, modalità <strong>Video</strong>, <strong>4K</strong> e lente <strong>0,5×</strong>.')}
       ${li('ii.', esc(st.text))}
-      ${li('iii.', 'Ferma la registrazione, torna qui, tocca <strong>Scegli il video</strong>, poi la galleria delle foto, e seleziona il video appena registrato.')}
+      ${li('iii.', 'Ferma la registrazione, torna qui, tocca <strong>Scegli il video</strong> e seleziona il video appena registrato.')}
+      ${li('iv.', 'Nel menu tocca <strong>Libreria foto</strong> (o <strong>Raccolta fotografica</strong>), non la voce per fare un nuovo video.')}
     </ol>
     ${ask ? `<div style="display: flex; flex-direction: column; gap: 8px"><label class="o-lab" for="ov-casa" style="color: var(--soft)">Indirizzo dell’immobile</label><input class="o-in" id="ov-casa" autocomplete="street-address" placeholder="Es. Via Roma 12, Bologna"></div>` : ''}
     ${err ? `<p class="o-err">${esc(err)}</p>` : ''}
     ${CFG.scriptUrl ? '' : '<p class="o-err">L’invio dei video non è ancora collegato: per ora la guida va solo avanti.</p>'}
-    <div class="o-row"><button type="button" class="o-btn p" data-a="pick">Scegli il video</button></div>
-    <p class="o-p" style="text-align: center; font-size: 13px">Nel menu tocca <strong style="color: var(--ink)">Libreria foto</strong> (o <strong style="color: var(--ink)">Raccolta fotografica</strong>), non la voce per fare un nuovo video.</p>`);
+    <div class="o-row"><button type="button" class="o-btn p" data-a="pick">Scegli il video</button></div>`);
 }
 // The end: no uploading to do, only to wait for the videos still travelling.
 function drawEnd() {
