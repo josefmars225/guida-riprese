@@ -141,7 +141,7 @@ button.btn-p{border:0;cursor:pointer}
 @keyframes fp-zoom{0%,6%{transform:scale(1)}90%,100%{transform:scale(var(--zoom))}}
 @media (prefers-reduced-motion: reduce){.anim .fp-move{animation:none}}
 /* Skipping a point: a quiet dashed line under the plan, never competing with Registra. */
-.skip-btn{display:flex;align-items:center;gap:9px;width:100%;margin-top:10px;min-height:40px;padding:8px 14px;box-sizing:border-box;border-radius:14px;background:rgba(255,255,255,.05);border:1px dashed rgba(243,235,221,.38);color:#F3EBDD;font:500 12.5px/1.35 Archivo,system-ui,sans-serif;text-align:left;cursor:pointer;transition:transform .25s cubic-bezier(.3,.7,.2,1)}
+.skip-btn{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;min-height:72px;padding:12px 20px;box-sizing:border-box;border-radius:22px;background:rgba(18,15,9,.32);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1.5px dashed rgba(217,194,154,.7);color:#F3EBDD;font:600 16px/1.35 Archivo,system-ui,sans-serif;text-align:left;text-shadow:0 1px 10px rgba(10,8,4,.45);cursor:pointer;transition:transform .25s cubic-bezier(.3,.7,.2,1)}
 .skip-btn:active{transform:scale(.98)}.skip-btn svg{flex:none}
 /* The brand, small at the very top, in the guide's Vogue-like display face: wide letters, pressed flat. */
 .brand{position:absolute;top:21px;left:0;right:0;margin:0;text-align:center;font:500 11px/1 var(--display);letter-spacing:.62em;text-indent:.62em;color:rgba(243,235,221,.86);transform:scaleY(.78);text-shadow:0 1px 8px rgba(10,8,4,.45);pointer-events:none}
@@ -579,12 +579,17 @@ button.btn-p{border:0;cursor:pointer}
           </div>
               </div>
               <!-- The first-person view is off for now: the Pianta / Prima persona switch (FP_SWITCH in build_proto.py) brings it back. -->
-              <sc-if value="{{ step.isTurn }}" hint-placeholder-val="{{ false }}">
-                <button type="button" class="skip-btn" onClick="{{ step.skip }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9C29A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5.5l7 6.5-7 6.5M12.5 5.5l7 6.5-7 6.5"></path></svg>Salta, punto troppo stretto o ostruito da un oggetto</button>
-              </sc-if>
             </div>
           </figure>
         </div>
+        <!-- Skipping a point: its own row in the free space under the plan, big enough to be seen. -->
+        <sc-if value="{{ step.isTurn }}" hint-placeholder-val="{{ false }}">
+          <div style="flex: 1; display: flex; align-items: center; padding: 18px 0">
+            <div class="posa" style="--d: 520ms; width: 100%">
+              <button type="button" class="skip-btn" onClick="{{ step.skip }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D9C29A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5.5l7 6.5-7 6.5M12.5 5.5l7 6.5-7 6.5"></path></svg><span>Salta, punto troppo stretto<br>o ostruito da un oggetto</span></button>
+            </div>
+          </div>
+        </sc-if>
         <nav style="margin-top: auto; display: flex; gap: 10px">
           <div class="posa" style="--d: 560ms; flex: 1; display: flex">
             <button ref="{{ back.ref }}" type="button" class="btn lg" style="flex: 1; --h: {{back.h}}" onClick="{{ goBack }}">
