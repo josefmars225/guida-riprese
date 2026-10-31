@@ -2,10 +2,10 @@
 
 La guida alle riprese: la web app con cui i clienti filmano la propria casa dal telefono, passo dopo passo, per il video dell'immobile. I video arrivano da soli nel tuo Google Drive.
 
-**La guida:** https://josefmars225.github.io/guida-riprese/
+**La guida:** https://foretaste-riprese.github.io/
 
 Per ogni cliente, aggiungi l'indirizzo dell'immobile al link, così i suoi video finiscono nella sua cartella:
-`https://josefmars225.github.io/guida-riprese/?casa=Via Roma 12, Bologna`
+`https://foretaste-riprese.github.io/?casa=Via Roma 12, Bologna`
 
 ## Come funziona
 
