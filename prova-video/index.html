@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prova scelta video · Guida alle riprese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&display=swap">
+<style>
+/* Does the phone hand over the original video, and how long does it make us wait? One video, four ways of asking. */
+:root { color-scheme: dark; --ground: #23281a; --ink: #F3EBDD; --soft: rgba(243, 235, 221, .78); --line: rgba(243, 235, 221, .16); --champ: #D9C29A; --deep: #17130C; --ok: #B9D49A; --bad: #F2B8A6;
+  --display: "Bodoni Moda", Didot, "Times New Roman", serif; --body: "Archivo", system-ui, -apple-system, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 15px/1.5 var(--body); padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+main { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.lab { font-stretch: 125%; font-weight: 500; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--champ); }
+h1 { margin: 0; font: 400 36px/1.04 var(--display); letter-spacing: -.012em; }
+h1 em { color: #E6D3B0; }
+p { margin: 0; color: var(--soft); }
+.card { border: 1px solid var(--line); background: rgba(255, 255, 255, .04); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.btn { display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 999px; padding: 0 22px; font: 600 15px var(--body); cursor: pointer; background: var(--champ); color: var(--deep); }
+input[type=file] { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.out { font-size: 13px; color: var(--soft); font-variant-numeric: tabular-nums; }
+.good { color: var(--ok); } .bad { color: var(--bad); }
+pre { margin: 0; white-space: pre-wrap; font: 12px/1.45 ui-monospace, Menlo, monospace; color: var(--soft); background: rgba(0, 0, 0, .25); border-radius: 12px; padding: 12px; }
+.btn.g { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<main>
+  <span class="lab">Guida alle riprese · prova</span>
+  <h1>Originale o <em>convertito?</em></h1>
+  <p>Gira prima un video di 10 secondi con la Fotocamera (4K, 0,5×). Poi tocca i quattro tasti uno alla volta e scegli <strong>sempre lo stesso video</strong> dalla Libreria foto. Per ognuno la pagina misura quanto hai aspettato e se il video è arrivato originale (HEVC) o convertito (H.264). Nessun video viene inviato.</p>
+  <section class="card"><span class="lab">A · come adesso</span><label class="btn" for="a">Scegli il video · A</label><input id="a" type="file" accept="video/*"><p class="out" id="oa">—</p></section>
+  <section class="card"><span class="lab">B · formato Apple</span><label class="btn" for="b">Scegli il video · B</label><input id="b" type="file" accept="video/quicktime"><p class="out" id="ob">—</p></section>
+  <section class="card"><span class="lab">C · video e formato Apple</span><label class="btn" for="c">Scegli il video · C</label><input id="c" type="file" accept="video/*,video/quicktime,video/hevc,.mov"><p class="out" id="oc">—</p></section>
+  <section class="card"><span class="lab">D · qualsiasi file</span><label class="btn" for="d">Scegli il video · D</label><input id="d" type="file"><p class="out" id="od">—</p></section>
+  <section class="card"><span class="lab">Risultato da mandare a Claude</span><pre id="rep">Fai le quattro prove, poi copia questo testo.</pre><label class="btn g" id="copy" tabindex="0" role="button">Copia il risultato</label></section>
+</main>
+<script>
+const R = {}, t0 = {};
+// Which video codec is inside: iPhone originals are HEVC ('hvc1'), a converted copy is H.264 ('avc1').
+async function codec(f) {
+  const look = async (a, b) => { const t = new TextDecoder('latin1').decode(await f.slice(a, b).arrayBuffer()); return t.includes('hvc1') || t.includes('hev1') ? 'HEVC' : t.includes('avc1') ? 'H.264' : null; };
+  const n = Math.min(f.size, 4 * 1048576);
+  return (await look(f.size - n, f.size)) || (await look(0, n)) || 'non trovato';
+}
+function duration(f) {
+  return new Promise((res) => { const v = document.createElement('video'); v.preload = 'metadata'; v.muted = true; v.src = URL.createObjectURL(f);
+    v.onloadedmetadata = () => res({ d: v.duration, w: v.videoWidth, h: v.videoHeight }); v.onerror = () => res({ d: NaN, w: 0, h: 0 }); setTimeout(() => res({ d: NaN, w: 0, h: 0 }), 8000); });
+}
+function report() {
+  document.getElementById('rep').textContent = navigator.userAgent + '\n' + ['a', 'b', 'c', 'd'].map((k) => k.toUpperCase() + ': ' + (R[k] || 'non provata')).join('\n');
+}
+['a', 'b', 'c', 'd'].forEach((k) => {
+  const el = document.getElementById(k);
+  el.addEventListener('click', () => { t0[k] = performance.now(); });
+  // the wait the client sees runs from the tap on the video until the page gets it; time spent choosing counts too,
+  // so the page also notes when it comes back into view, and measures from there
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && t0[k]) t0[k + 'back'] = performance.now(); });
+  el.addEventListener('change', async () => {
+    const f = el.files && el.files[0], out = document.getElementById('o' + k);
+    if (!f) { out.textContent = 'nessun video scelto'; return; }
+    const wait = ((performance.now() - (t0[k + 'back'] || t0[k])) / 1000).toFixed(1);
+    out.textContent = 'sto leggendo…';
+    const c = await codec(f), m = await duration(f), mb = f.size / 1048576, rate = isFinite(m.d) && m.d > 0 ? (mb / m.d).toFixed(2) : '?';
+    R[k] = `${c} · ${m.w}×${m.h} · ${isFinite(m.d) ? m.d.toFixed(1) : '?'} s · ${mb.toFixed(1)} MB (${rate} MB/s) · ${f.type || 'tipo ?'} · ${f.name} · attesa ~${wait} s`;
+    out.innerHTML = `<span class="${c === 'HEVC' ? 'good' : 'bad'}">${c === 'HEVC' ? 'Originale (HEVC)' : c === 'H.264' ? 'Convertito (H.264)' : 'Formato non trovato'}</span> · ${m.w}×${m.h} · ${mb.toFixed(1)} MB · ${rate} MB/s · attesa ~${wait} s`;
+    report();
+  });
+});
+document.getElementById('copy').addEventListener('click', async () => {
+  const t = document.getElementById('rep').textContent;
+  try { await navigator.clipboard.writeText(t); document.getElementById('copy').textContent = 'Copiato'; }
+  catch (_) { const r = document.createRange(); r.selectNodeContents(document.getElementById('rep')); getSelection().removeAllRanges(); getSelection().addRange(r); document.getElementById('copy').textContent = 'Selezionato: copialo tu'; }
+});
+report();
+</script>
+</body>
+</html>
