@@ -5,11 +5,11 @@ La guida alle riprese: la web app con cui i clienti filmano la propria casa dal 
 **La guida:** https://foretaste-riprese.github.io/
 
 Per ogni cliente, aggiungi l'indirizzo dell'immobile al link, così i suoi video finiscono nella sua cartella:
-`https://foretaste-riprese.github.io/?casa=Via Roma 12, Bologna`
+`https://foretaste-riprese.github.io/?casa=Via+Roma+12+Bologna` (i + al posto degli spazi tengono intero il link su WhatsApp). Senza `?casa=` la guida chiede l'indirizzo al cliente.
 
 ## Come funziona
 
-1. Il cliente apre il link dal telefono e segue la guida: setup, scelta dello spazio, un passo alla volta con pianta e vista in prima persona.
+1. Il cliente apre il link dal telefono e segue la guida: setup, scelta dello spazio, un passo alla volta con la pianta.
 2. Ogni passo lo gira con l'app Fotocamera (4K, lente 0,5×), poi nella guida tocca **Scegli il video**.
 3. La guida manda il video a pezzi direttamente nel tuo Drive mentre lui passa al passo successivo; se cade la connessione riprende da sola.
 
