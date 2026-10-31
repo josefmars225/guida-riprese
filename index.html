@@ -17,6 +17,7 @@
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="it_IT">
 <meta name="twitter:card" content="summary_large_image">
+<script>window.GUIDA_BUILD = '660446c4c6';</script>
 <script src="config.js?v=0c99e2d2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
@@ -1917,7 +1918,7 @@ function status(trouble) {
   clearTimeout(hideT);
   if (!Q.length) { el.hidden = true; document.body.classList.remove('sending'); return; }
   el.hidden = false; document.body.classList.add('sending'); el.classList.toggle('ok', !p.length); el.classList.toggle('err', !!trouble && !navigator.onLine);
-  if (!p.length) { $('#send-t').textContent = Q.length === 1 ? 'Video arrivato' : `Tutti i ${Q.length} video sono arrivati`; hideT = setTimeout(() => { el.hidden = true; document.body.classList.remove('sending'); }, 6000); return; }
+  if (!p.length) { $('#send-t').textContent = Q.length === 1 ? 'Video arrivato' : `Tutti i ${Q.length} video sono arrivati`; hideT = setTimeout(() => { el.hidden = true; document.body.classList.remove('sending'); }, 6000); applyUpdate(); return; }
   const tot = p.reduce((a, x) => a + x.size, 0), done = p.reduce((a, x) => a + x.sent, 0);
   const pct = tot ? Math.floor(done / tot * 100) : 0;
   $('#send-t').textContent = !navigator.onLine ? 'Invio in pausa: manca la connessione' : `Invio ${p.length === 1 ? 'del video' : `di ${p.length} video`} · ${pct}%`;
@@ -1935,7 +1936,7 @@ function enqueue(file, sc) {
 // ---------- the sheet ----------
 const OV = { screen: null };
 function sheet(html) { $('#sheet').className = 'sheet'; $('#sheet').innerHTML = html; $('#ov').hidden = false; }
-function closeSheet() { $('#ov').hidden = true; $('#sheet').innerHTML = ''; OV.screen = null; saveState(); }
+function closeSheet() { $('#ov').hidden = true; $('#sheet').innerHTML = ''; OV.screen = null; saveState(); applyUpdate(); }
 const KEEP = 'guida-stato:' + (fromLink || '');
 function saveState() {
   try { const c = (comp && comp.state) || {}; sessionStorage.setItem(KEEP, JSON.stringify({ scr: c.scr || null, hist: c.hist || [], rec: OV.screen })); } catch (_) {}
@@ -2039,6 +2040,36 @@ function meadow() {
 }
 
 // ---------- start ----------
+// ---------- updating itself: a new version published while the guide is open reaches the client by itself ----------
+// The guide looks at version.json now and then and whenever the client comes back to it. When it differs, it waits
+// for a quiet moment (no sheet open, no video travelling) and reloads the newest version, past the phone's cache;
+// where the client was and any video still to send are kept, as for any reload.
+let newer = null;
+async function checkUpdate() {
+  if (!window.GUIDA_BUILD || location.protocol === 'file:') return;
+  try {
+    const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+    const v = r.ok && (await r.json()).v;
+    if (v && v !== window.GUIDA_BUILD) { newer = v; applyUpdate(); }
+  } catch (_) {}
+}
+function applyUpdate() {
+  if (!newer || !$('#ov').hidden || pending().length) return;
+  try {
+    // never twice in a row for the same version (the new page may take a minute to be everywhere)
+    const last = JSON.parse(sessionStorage.getItem('guida-agg') || '{}');
+    if (last.v === newer && Date.now() - last.t < 5 * 60000) return;
+    sessionStorage.setItem('guida-agg', JSON.stringify({ v: newer, t: Date.now() }));
+  } catch (_) {}
+  saveState();
+  const u = new URL(location.href);
+  u.searchParams.set('v', newer);
+  location.replace(u.toString());
+}
+setTimeout(checkUpdate, 4000);
+setInterval(checkUpdate, 3 * 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdate(); });
+
 comp = DC.mount($('#board'), $('#dc-tpl'), Component, PROPS);
 meadow();
 const was = loadState();

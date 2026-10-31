@@ -37,5 +37,9 @@ assert not re.search(r"__[A-Z]+__", html), "a placeholder was left"
 import hashlib
 ver = hashlib.sha1((ROOT / "config.js").read_bytes()).hexdigest()[:8]
 html = html.replace('<script src="config.js"></script>', f'<script src="config.js?v={ver}"></script>', 1)
+# the guide's version: the open guides compare it with version.json and update themselves when it changes
+build = hashlib.sha1(html.encode("utf-8")).hexdigest()[:10]
+html = html.replace("<script src=\"config.js", f"<script>window.GUIDA_BUILD = '{build}';</script>\n<script src=\"config.js", 1)
+(ROOT / "version.json").write_text(json.dumps({"v": build}) + "\n", encoding="utf-8")
 (ROOT / "index.html").write_text(html, encoding="utf-8")
 print("index.html", len(html), "bytes")

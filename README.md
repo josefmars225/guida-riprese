@@ -30,3 +30,5 @@ Dopo aver cambiato `design/Main.dc.html` o `src/`:
 ```bash
 python3 tools/build.py
 ```
+
+Il comando rifà `index.html` e `version.json`. Una volta pubblicato, chi ha la guida aperta riceve la versione nuova da solo: la guida controlla `version.json` ogni pochi minuti e quando il cliente ci torna, e si ricarica nel primo momento tranquillo (nessun pannello aperto, nessun video in viaggio), restando sullo stesso passo.
