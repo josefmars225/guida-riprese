@@ -13,7 +13,7 @@ const FOLDER_ID = 'INCOLLA_QUI_L_ID_DELLA_CARTELLA';
 const FOLDER = FOLDER_ID.split(/[?#/]/)[0].trim();
 
 // Gli indirizzi della guida: solo da qui si possono mandare i video.
-const ORIGINS = ['https://foretaste.github.io', 'https://josefmars225.github.io'];
+const ORIGINS = ['https://foretaste-riprese.github.io', 'https://josefmars225.github.io'];
 
 const MAX_SIZE = 4 * 1024 * 1024 * 1024;   // 4 GB per video
 
