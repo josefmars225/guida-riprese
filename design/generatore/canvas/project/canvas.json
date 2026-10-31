@@ -1,0 +1,32 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-29T11:15:00Z"},
+  "title": "Guida alle riprese — UI luxury",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 390, "h": 844, "title": "01 · Prima di iniziare", "is_interactive": true, "radius": 44},
+    "Permesso.dc.html": {"x": 470, "y": 0, "w": 390, "h": 844, "title": "02 · Fotocamera e microfono", "is_interactive": true, "radius": 44},
+    "Entra.dc.html": {"x": 940, "y": 0, "w": 390, "h": 844, "title": "03 · Ogni spazio: entra registrando", "is_interactive": true, "radius": 44},
+    "Stanza.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 844, "title": "04 · Ogni spazio: parte ampia", "is_interactive": true, "radius": 44},
+    "Stretta.dc.html": {"x": 1880, "y": 0, "w": 390, "h": 844, "title": "05 · Ogni spazio: parte stretta", "is_interactive": true, "radius": 44},
+    "Porte.dc.html": {"x": 2350, "y": 0, "w": 390, "h": 844, "title": "06 · Ogni spazio: porte e uscita", "is_interactive": true, "radius": 44},
+    "Registra.dc.html": {"x": 2820, "y": 0, "w": 390, "h": 844, "title": "07 · Registrazione dentro la guida", "is_interactive": true, "radius": 44},
+    "Fatto.dc.html": {"x": 3290, "y": 0, "w": 390, "h": 844, "title": "08 · Spazio registrato", "is_interactive": true, "radius": 44},
+    "Controllo.dc.html": {"x": 3760, "y": 0, "w": 390, "h": 844, "title": "09 · Controllo finale", "is_interactive": true, "radius": 44},
+    "Video.dc.html": {"x": 4230, "y": 0, "w": 390, "h": 844, "title": "10 · I video dell’immobile", "is_interactive": true, "radius": 44},
+    "InBreve.dc.html": {"x": 4820, "y": 0, "w": 390, "h": 844, "title": "In breve · tutta la guida", "is_interactive": true, "radius": 44},
+    "Negato.dc.html": {"x": 0, "y": 1300, "w": 390, "h": 844, "title": "Permesso non concesso", "is_interactive": true, "radius": 44},
+    "Telefono.dc.html": {"x": 470, "y": 1300, "w": 390, "h": 844, "title": "Memoria e batteria", "is_interactive": true, "radius": 44},
+    "Interrotto.dc.html": {"x": 940, "y": 1300, "w": 390, "h": 844, "title": "Caricamento in pausa", "is_interactive": true, "radius": 44},
+    "Riprendi.dc.html": {"x": 1410, "y": 1300, "w": 390, "h": 844, "title": "Riprendere da dove eri", "is_interactive": true, "radius": 44},
+    "Sistema.dc.html": {"x": 0, "y": 2600, "w": 1280, "h": 1000, "title": "Sistema visivo"}
+  },
+  "order": ["Main.dc.html", "Permesso.dc.html", "Entra.dc.html", "Stanza.dc.html", "Stretta.dc.html", "Porte.dc.html", "Registra.dc.html", "Fatto.dc.html", "Controllo.dc.html", "Video.dc.html", "InBreve.dc.html", "Negato.dc.html", "Telefono.dc.html", "Interrotto.dc.html", "Riprendi.dc.html", "Sistema.dc.html"],
+  "notes": {
+    "flusso": {"x": 0, "y": -300, "text": "Il flusso, sul telefono", "kind": "title1", "maxW": 5210},
+    "inciampi": {"x": 0, "y": 1000, "text": "I momenti di inciampo", "kind": "title1", "maxW": 1800},
+    "sistema": {"x": 0, "y": 2300, "text": "Il sistema visivo", "kind": "title1", "maxW": 1280}
+  },
+  "designSystems": []
+}

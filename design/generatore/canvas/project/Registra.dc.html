@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Registrazione dentro la guida</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&amp;family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&amp;family=GFS+Didot&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#D9C29A}a:hover{color:#F3EBDD}
+.dsp{font-family:var(--display);font-weight:400;font-optical-sizing:auto}
+.dsp em{font-style:italic;color:#D9C29A}
+.lab{font-family:Archivo,system-ui,sans-serif;font-stretch:125%;font-weight:500;font-size:10px;letter-spacing:.24em;text-transform:uppercase}
+/* Over the live camera there is no fixed image to bend: same glass, blur and rim only, no edge lens. */
+.glass{background:rgba(18,15,9,.18);-webkit-backdrop-filter:blur(16px) saturate(1.45);backdrop-filter:blur(16px) saturate(1.45);border:1px solid rgba(255,255,255,.18);box-shadow:inset 1.5px 1.5px 0 rgba(255,255,255,.45),inset -1px -1px 0 rgba(255,255,255,.14),inset 0 0 24px rgba(255,255,255,.08),0 14px 34px -16px rgba(8,6,3,.6);text-shadow:0 1px 10px rgba(10,8,4,.4)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:50px;width:100%;border-radius:999px;text-decoration:none;font-family:Archivo,system-ui,sans-serif;font-size:14px;font-weight:600;box-sizing:border-box;cursor:pointer;transition:transform .25s cubic-bezier(.3,.7,.2,1)}
+.btn:active{transform:scale(.965)}
+.btn-p{position:relative;overflow:hidden;background:#D9C29A;color:#17130C;border:0;text-shadow:none}.btn-p:hover{background:#E6D3B0}
+.btn-g{background:rgba(255,255,255,.08);color:#F3EBDD;border:1px solid rgba(255,255,255,.18);box-shadow:inset 1.5px 1.5px 0 rgba(255,255,255,.4),inset -1px -1px 0 rgba(255,255,255,.12)}.btn-g:hover{background:rgba(255,255,255,.14)}
+.stop{width:76px;height:76px;border-radius:50%;border:2px solid #F3EBDD;display:grid;place-items:center;box-sizing:border-box;transition:transform .25s cubic-bezier(.3,.7,.2,1)}
+.stop:active{transform:scale(.94)}
+button{font:inherit}
+@keyframes blink{50%{opacity:.25}}
+.rec{animation:blink 1.4s steps(1) infinite}
+/* Posa: each element rises from its own base line, lifts a little, tilted up to the right like a cup held by the wrist, then sets down flat. */
+.posa{display:block;--tilt:-1.8deg;--dur:820ms}
+.posa>*,.free{transform-origin:20% 100%}
+.free{--tilt:-.9deg;--dur:820ms}
+.anim .posa{animation:posa-clip var(--dur) linear var(--d,0ms) backwards}
+.anim .posa>*{animation:posa var(--dur) linear var(--d,0ms) backwards}
+@keyframes posa-clip{0%,99.9%{clip-path:inset(-120px -120px -.15em -120px)}100%{clip-path:none}}
+@keyframes posa{0%{transform:translateY(calc(100% + 8px)) rotate(calc(var(--tilt) * 1.4));animation-timing-function:cubic-bezier(.2,.75,.25,1)}58%{transform:translateY(-9px) rotate(var(--tilt));animation-timing-function:cubic-bezier(.45,0,.3,1)}100%{transform:translateY(0) rotate(0deg)}}
+/* Glass over the camera can't sit inside a clipping wrapper (the blur would lose what's behind it): it rises the same way, fading in instead of emerging from a line. */
+.anim .free{animation:posa-free var(--dur) linear var(--d,0ms) backwards}
+@keyframes posa-free{0%{opacity:0;transform:translateY(40px) rotate(calc(var(--tilt) * 1.4));animation-timing-function:cubic-bezier(.2,.75,.25,1)}25%{opacity:1}58%{transform:translateY(-9px) rotate(var(--tilt));animation-timing-function:cubic-bezier(.45,0,.3,1)}100%{opacity:1;transform:translateY(0) rotate(0deg)}}
+.anim .corners{animation:fade .9s ease var(--d,0ms) backwards}
+.seg-new{transform-origin:left center}
+.anim .seg-new{animation:seg 700ms cubic-bezier(.22,1,.36,1) var(--d,0ms) backwards}
+@keyframes seg{from{transform:scaleX(0)}}
+.btn-p::after{content:"";position:absolute;inset:0;opacity:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);pointer-events:none}
+.anim .btn-p::after{animation:sheen 1.2s cubic-bezier(.45,0,.3,1) calc(var(--d,0ms) + 700ms) backwards}
+@keyframes sheen{0%{opacity:1;transform:translateX(-100%)}90%{opacity:1}100%{opacity:0;transform:translateX(100%)}}
+@media (prefers-reduced-motion: reduce){.rec,.anim .posa,.anim .btn-p::after,.anim .seg-new{animation:none}.anim .posa>*,.anim .free,.anim .corners{animation:fade .4s ease var(--d,0ms) backwards}}
+@keyframes fade{from{opacity:0}}
+</style>
+</helmet>
+<div class="{{animClass}}" style="position: relative; width: 390px; height: 844px; overflow: hidden; color: #F3EBDD; font-family: Archivo, system-ui, sans-serif; background: radial-gradient(120% 70% at 60% 38%, #6b5a43 0%, #3d3327 45%, #1c1812 100%); --display: {{displayFont}}">
+
+  <svg aria-hidden="true" viewBox="0 0 390 844" width="390" height="844" style="position: absolute; inset: 0">
+    <path d="M0 210 L150 300 L150 560 L0 690" fill="none" stroke="rgba(243,235,221,.10)" stroke-width="1.2"></path>
+    <path d="M390 170 L262 292 L262 568 L390 720" fill="none" stroke="rgba(243,235,221,.10)" stroke-width="1.2"></path>
+    <path d="M150 300 L262 292 M150 560 L262 568" fill="none" stroke="rgba(243,235,221,.10)" stroke-width="1.2"></path>
+    <rect x="176" y="340" width="62" height="96" fill="rgba(255,236,200,.08)" stroke="rgba(243,235,221,.12)"></rect>
+  </svg>
+  <p class="lab" style="position: absolute; left: 0; right: 0; top: 470px; margin: 0; text-align: center; font-size: 9px; color: rgba(243,235,221,.42)">Anteprima fotocamera dal vivo · segnaposto</p>
+
+  <div class="corners" aria-hidden="true" style="--d: 150ms; position: absolute; inset: 120px 18px 300px; pointer-events: none">
+    <span style="position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-left: 1.5px solid rgba(243,235,221,.7); border-top: 1.5px solid rgba(243,235,221,.7)"></span>
+    <span style="position: absolute; right: 0; top: 0; width: 22px; height: 22px; border-right: 1.5px solid rgba(243,235,221,.7); border-top: 1.5px solid rgba(243,235,221,.7)"></span>
+    <span style="position: absolute; left: 0; bottom: 0; width: 22px; height: 22px; border-left: 1.5px solid rgba(243,235,221,.7); border-bottom: 1.5px solid rgba(243,235,221,.7)"></span>
+    <span style="position: absolute; right: 0; bottom: 0; width: 22px; height: 22px; border-right: 1.5px solid rgba(243,235,221,.7); border-bottom: 1.5px solid rgba(243,235,221,.7)"></span>
+  </div>
+
+  <header class="glass free" style="--d: 0ms; position: absolute; left: 14px; right: 14px; top: 54px; height: 50px; border-radius: 999px; padding: 0 8px 0 18px; display: flex; align-items: center; justify-content: space-between">
+    <span style="display: inline-flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums"><span class="rec" aria-hidden="true" style="width: 9px; height: 9px; border-radius: 50%; background: #E0583F"></span>01:42</span>
+    <span class="lab" style="color: #F3EBDD">Spazio 2</span>
+    <span class="lab" style="height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid #D9C29A; color: #D9C29A; display: inline-flex; align-items: center; letter-spacing: .12em">0,5×</span>
+  </header>
+
+  <p class="lab free" style="--d: 120ms; position: absolute; left: 0; right: 0; top: 116px; margin: 0; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 9px; color: rgba(243,235,221,.85); text-shadow: 0 1px 8px rgba(0,0,0,.5)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"></path><path d="M16 9.5l5 5M21 9.5l-5 5"></path></svg>Musica in pausa durante la ripresa</p>
+
+  <div class="free" role="img" aria-label="Livella: telefono dritto" style="--d: 200ms; position: absolute; left: 0; right: 0; top: 368px; display: flex; flex-direction: column; align-items: center; gap: 10px">
+    <div aria-hidden="true" style="display: flex; align-items: center; gap: 10px">
+      <span style="width: 70px; height: 1.5px; background: #D9C29A"></span>
+      <span style="width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #D9C29A"></span>
+      <span style="width: 70px; height: 1.5px; background: #D9C29A"></span>
+    </div>
+    <span class="lab" style="font-size: 9px; color: #D9C29A">Dritto</span>
+  </div>
+
+  <section class="glass free" style="--d: 260ms; position: absolute; left: 12px; right: 12px; bottom: 30px; border-radius: 28px; padding: 20px 18px 18px">
+    <div class="posa" style="--d: 520ms">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <span class="lab" style="color: #D9C29A">Punto 3 di 8</span>
+        <span class="lab" style="font-size: 9px; color: #F3EBDD">Centro parete</span>
+      </div>
+    </div>
+    <h1 class="dsp" style="margin: 10px 0 0; font-size: 30px; line-height: 1.06; letter-spacing: -.01em">
+      <span class="posa" style="--d: 580ms"><span style="display: block">Gira piano,</span></span>
+      <span class="posa" style="--d: 640ms"><span style="display: block">da parete <em>a parete</em></span></span>
+    </h1>
+    <div aria-hidden="true" style="margin-top: 16px; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px">
+      <span style="height: 3px; border-radius: 2px; background: #D9C29A"></span>
+      <span style="height: 3px; border-radius: 2px; background: #D9C29A"></span>
+      <span class="seg-new" style="--d: 900ms; height: 3px; border-radius: 2px; background: #F3EBDD"></span>
+      <span style="height: 3px; border-radius: 2px; background: rgba(243,235,221,.25)"></span>
+      <span style="height: 3px; border-radius: 2px; background: rgba(243,235,221,.25)"></span>
+      <span style="height: 3px; border-radius: 2px; background: rgba(243,235,221,.25)"></span>
+      <span style="height: 3px; border-radius: 2px; background: rgba(243,235,221,.25)"></span>
+      <span style="height: 3px; border-radius: 2px; background: rgba(243,235,221,.25)"></span>
+    </div>
+    <div style="margin-top: 18px; display: grid; grid-template-columns: 1fr 76px 1fr; gap: 12px; align-items: center">
+      <div class="posa" style="--d: 720ms"><button type="button" class="btn btn-g">Salta</button></div>
+      <div class="posa" style="--d: 680ms"><a href="Fatto.dc.html" class="stop" aria-label="Ferma la registrazione"><span style="width: 26px; height: 26px; border-radius: 7px; background: #E0583F"></span></a></div>
+      <div class="posa" style="--d: 760ms"><button type="button" class="btn btn-p">Punto fatto</button></div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"display":{"editor":"enum","options":["Bodoni Moda","GFS Didot"],"default":"Bodoni Moda","section":"Tipografia"},"animazioni":{"editor":"boolean","default":true,"section":"Movimento"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  // While recording the microphone is on: this screen hushes the music without switching it off,
+  // so the next screen picks it up again.
+  componentDidMount() {
+    try {
+      const bc = new BroadcastChannel('guida-suoni');
+      bc.postMessage({ type: 'claim', at: Date.now() });
+      bc.close();
+    } catch (_) {}
+  }
+  renderVals() {
+    const display = this.props.display ?? 'Bodoni Moda';
+    return {
+      animClass: (this.props.animazioni ?? true) ? 'anim' : '',
+      displayFont: '"' + display + '", "Bodoni Moda", Didot, serif'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-10-30T09:30:00Z"},
+  "title": "Prototipo guida riprese — design",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 390, "h": 844, "title": "Prototipo · tutto il flusso (premi Play)", "is_interactive": true, "radius": 44}
+  },
+  "order": ["Main.dc.html"],
+  "notes": {},
+  "designSystems": []
+}

@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Ogni spazio — angoli e centro di ogni parete</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&amp;family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&amp;family=GFS+Didot&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#D9C29A}a:hover{color:#F3EBDD}
+.prato{background:#4d5c34 url(/_blob/42f94be454e116a6ad7236add399e17d) center/cover no-repeat}
+/* The meadow in the wind; the still photo underneath stays as poster and for reduced motion. */
+.prato-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+@media (prefers-reduced-motion: reduce){.prato-video{display:none}}
+.dsp{font-family:var(--display);font-weight:400;font-optical-sizing:auto}
+.dsp em{font-style:italic;color:#D9C29A}
+.prato h1,.prato p{text-shadow:0 1px 14px rgba(12,10,6,.45)}
+.lab{font-family:Archivo,system-ui,sans-serif;font-stretch:125%;font-weight:500;font-size:10px;letter-spacing:.24em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:54px;border-radius:999px;text-decoration:none;font-family:Archivo,system-ui,sans-serif;font-size:15px;font-weight:600;letter-spacing:.01em;box-sizing:border-box}
+.btn-p{position:relative;overflow:hidden;background:#D9C29A;color:#17130C;transition:transform .25s cubic-bezier(.3,.7,.2,1)}.btn-p:hover{background:#E6D3B0;color:#17130C}.btn-p:active{transform:scale(.965)}
+button{font:inherit;cursor:pointer;border:0;padding:0;background:none}
+/* Liquid glass: a blurred copy of the meadow, bent at the rim by an SVG lens, under a 18% veil and a light rim. */
+.lg{position:relative;overflow:hidden;isolation:isolate;color:#F3EBDD;box-shadow:0 14px 34px -16px rgba(8,6,3,.6)}
+.lg-refr{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none}
+.lg-img{position:absolute;width:390px;height:844px;background:#4d5c34 url(/_blob/42f94be454e116a6ad7236add399e17d) center/cover no-repeat;filter:blur(9px) saturate(1.45) brightness(.97)}
+.lg-tint{position:absolute;inset:0;box-sizing:border-box;border-radius:inherit;pointer-events:none;background:rgba(18,15,9,.18);border:1px solid rgba(255,255,255,.18);box-shadow:inset 1.5px 1.5px 0 rgba(255,255,255,.45),inset -1px -1px 0 rgba(255,255,255,.14),inset 0 0 24px rgba(255,255,255,.08)}
+.lg-c{position:relative;text-shadow:0 1px 10px rgba(10,8,4,.4)}
+a.lg,button.lg{transition:transform .25s cubic-bezier(.3,.7,.2,1)}
+a.lg:active,button.lg:active{transform:scale(.965)}
+a.lg:active .lg-tint,button.lg:active .lg-tint,.lg:hover .lg-tint{background:rgba(255,255,255,.06)}
+.f-fig{filter:url(#lgFig)}.f-inb{filter:url(#lgInb)}.f-back{filter:url(#lgBack)}
+.f-snd{filter:url(#lgSnd)}
+.snd{width:44px;height:44px;border-radius:50%;display:grid;place-items:center}
+/* Small chips sitting on a glass card: a second, thinner layer of glass without its own lens. */
+.pill{height:34px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.08);color:#F3EBDD;font-family:Archivo,system-ui,sans-serif;font-size:12px;font-weight:500;box-shadow:inset 1px 1px 0 rgba(255,255,255,.35),inset -1px -1px 0 rgba(255,255,255,.1);transition:transform .25s cubic-bezier(.3,.7,.2,1)}
+.pill:active{transform:scale(.95)}
+.pill[aria-pressed="true"]{background:#F3EBDD;color:#17130C;box-shadow:none;text-shadow:none}
+@keyframes pulse{0%{r:11;opacity:.9}100%{r:22;opacity:0}}
+.pulse{animation:pulse 1.8s ease-out infinite}
+/* Posa: each element rises from its own base line, lifts a little, tilted up to the right like a cup held by the wrist, then sets down flat. */
+.posa{display:block;--tilt:-1.8deg;--dur:820ms}
+.posa.l{--tilt:-.9deg}
+.posa>*{transform-origin:20% 100%}
+.anim .posa{animation:posa-clip var(--dur) linear var(--d,0ms) backwards}
+.anim .posa>*{animation:posa var(--dur) linear var(--d,0ms) backwards}
+.anim .posa>.lg .lg-img{animation:posa-inv var(--dur) linear var(--d,0ms) backwards}
+@keyframes posa-clip{0%,99.9%{clip-path:inset(-120px -120px -.15em -120px)}100%{clip-path:none}}
+@keyframes posa{0%{transform:translateY(calc(100% + 8px)) rotate(calc(var(--tilt) * 1.4));animation-timing-function:cubic-bezier(.2,.75,.25,1)}58%{transform:translateY(-9px) rotate(var(--tilt));animation-timing-function:cubic-bezier(.45,0,.3,1)}100%{transform:translateY(0) rotate(0deg)}}
+/* The glass keeps showing the still meadow while the piece moves: its inner copy runs the exact inverse motion. */
+@keyframes posa-inv{0%{transform:rotate(calc(var(--tilt) * -1.4)) translateY(calc(var(--h) * -1px - 8px));animation-timing-function:cubic-bezier(.2,.75,.25,1)}58%{transform:rotate(calc(var(--tilt) * -1)) translateY(9px);animation-timing-function:cubic-bezier(.45,0,.3,1)}100%{transform:rotate(0deg) translateY(0)}}
+.seg-new{transform-origin:left center}
+.anim .seg-new{animation:seg 700ms cubic-bezier(.22,1,.36,1) var(--d,0ms) backwards}
+@keyframes seg{from{transform:scaleX(0)}}
+.lg-tint::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;opacity:0;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.95) 50%,transparent 65%) 0 0/300% 100% no-repeat;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.anim .posa>.lg .lg-tint::after{animation:rim 1.3s cubic-bezier(.45,0,.3,1) calc(var(--d,0ms) + 600ms) backwards}
+@keyframes rim{0%{opacity:1;background-position:100% 0}80%{opacity:1}100%{opacity:0;background-position:0 0}}
+.btn-p::after{content:"";position:absolute;inset:0;opacity:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);pointer-events:none}
+.anim .btn-p::after{animation:sheen 1.2s cubic-bezier(.45,0,.3,1) calc(var(--d,0ms) + 700ms) backwards}
+@keyframes sheen{0%{opacity:1;transform:translateX(-100%)}90%{opacity:1}100%{opacity:0;transform:translateX(100%)}}
+/* The plan draws its route, then the points light up one by one. */
+.anim .route-draw{animation:draw 1.3s cubic-bezier(.45,0,.3,1) var(--d0,0ms) backwards}
+@keyframes draw{from{stroke-dashoffset:1}}
+.pt{transform-box:fill-box;transform-origin:center}
+.anim .pt{animation:pt 420ms cubic-bezier(.22,1,.36,1) calc(var(--d0,0ms) + var(--i) * 110ms) backwards}
+@keyframes pt{from{opacity:0;transform:scale(.5)}}
+@media (prefers-reduced-motion: reduce){.pulse,.anim .posa,.anim .posa>.lg .lg-img,.anim .lg-tint::after,.anim .btn-p::after,.anim .seg-new,.anim .route-draw,.anim .pt{animation:none}.anim .posa>*{animation:fade .4s ease var(--d,0ms) backwards}}
+@keyframes fade{from{opacity:0}}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" class="prato {{animClass}}" style="position: relative; width: 390px; height: 844px; overflow: hidden; color: #F3EBDD; font-family: Archivo, system-ui, sans-serif; --display: {{displayFont}}">
+  <svg aria-hidden="true" width="0" height="0" style="position: absolute">
+    <filter id="lgFig" filterUnits="userSpaceOnUse" x="0" y="0" width="{{fig.w}}" height="{{fig.h}}" color-interpolation-filters="sRGB">
+      <feImage href="/_blob/116c5dac2ab57a55619f3f6ee89ec668" x="0" y="0" width="{{fig.w}}" height="{{fig.h}}" preserveAspectRatio="none" result="map"></feImage>
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="38" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+    <filter id="lgInb" filterUnits="userSpaceOnUse" x="0" y="0" width="{{inb.w}}" height="{{inb.h}}" color-interpolation-filters="sRGB">
+      <feImage href="/_blob/a9ba74de8a60ba585f969e9af2a342a4" x="0" y="0" width="{{inb.w}}" height="{{inb.h}}" preserveAspectRatio="none" result="map"></feImage>
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="26" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+    <filter id="lgBack" filterUnits="userSpaceOnUse" x="0" y="0" width="{{back.w}}" height="{{back.h}}" color-interpolation-filters="sRGB">
+      <feImage href="/_blob/a9ba74de8a60ba585f969e9af2a342a4" x="0" y="0" width="{{back.w}}" height="{{back.h}}" preserveAspectRatio="none" result="map"></feImage>
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="26" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+    <filter id="lgSnd" filterUnits="userSpaceOnUse" x="0" y="0" width="{{snd.w}}" height="{{snd.h}}" color-interpolation-filters="sRGB">
+      <feImage href="/_blob/7f937f9d5015902de39fec83b78470f3" x="0" y="0" width="{{snd.w}}" height="{{snd.h}}" preserveAspectRatio="none" result="map"></feImage>
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="20" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+  </svg>
+  <video class="prato-video" src="/_blob/a78189329319cf3af17d4e9383c05b28" autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline" preload="auto" aria-hidden="true"></video>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: {{veilBg}}"></div>
+
+  <div style="position: relative; height: 100%; box-sizing: border-box; padding: 54px 20px 34px; display: flex; flex-direction: column">
+    <header style="display: flex; justify-content: space-between; align-items: center">
+      <div class="posa" style="--d: 0ms">
+        <div style="display: flex; flex-direction: column; gap: 3px">
+          <span class="lab" style="font-size: 8px; letter-spacing: .34em; color: rgba(243,235,221,.7)">Guida alle</span>
+          <span class="dsp" style="font-size: 22px; letter-spacing: .14em; line-height: 1">RIPRESE</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <div class="posa" style="--d: 30ms">
+          <button ref="{{ snd.ref }}" type="button" class="lg snd" aria-label="{{musicLabel}}" aria-pressed="{{musicPressed}}" onClick="{{ toggleMusic }}" style="--h: {{snd.h}}">
+            <span class="lg-refr f-snd" aria-hidden="true"><span class="lg-img" style="left: {{snd.l}}; top: {{snd.t}}; transform-origin: {{snd.ox}} {{snd.oy}}"></span></span>
+            <span class="lg-tint" aria-hidden="true"></span>
+            <span class="lg-c" style="display: grid; place-items: center">
+              <sc-if value="{{ music }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"></path><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"></path></svg></sc-if>
+              <sc-if value="{{ musicOff }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"></path><path d="M16 9.5l5 5M21 9.5l-5 5"></path></svg></sc-if>
+            </span>
+          </button>
+        </div>
+      <div class="posa" style="--d: 50ms">
+        <a ref="{{ inb.ref }}" href="InBreve.dc.html" class="lg" style="height: 44px; padding: 0 18px; border-radius: 999px; display: inline-flex; align-items: center; text-decoration: none; --h: {{inb.h}}">
+          <span class="lg-refr f-inb" aria-hidden="true"><span class="lg-img" style="left: {{inb.l}}; top: {{inb.t}}; transform-origin: {{inb.ox}} {{inb.oy}}"></span></span>
+          <span class="lg-tint" aria-hidden="true"></span>
+          <span class="lg-c lab">In breve</span>
+        </a>
+      </div>
+      </div>
+    </header>
+
+    <div class="posa" style="--d: 100ms; margin-top: 30px">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span class="lab" style="color: rgba(243,235,221,.78)">Ogni spazio · Spazio 2</span>
+          <span class="dsp" style="font-size: 15px; font-style: italic; color: #D9C29A">2 / 4</span>
+        </div>
+        <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+          <span style="height: 2px; background: #D9C29A"></span>
+          <span class="seg-new" style="--d: 520ms; height: 2px; background: #D9C29A"></span>
+          <span style="height: 2px; background: rgba(243,235,221,.3)"></span>
+          <span style="height: 2px; background: rgba(243,235,221,.3)"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="posa" style="--d: 150ms; margin-top: 24px">
+      <p class="lab" style="margin: 0; color: #D9C29A">Parte ampia · 8 punti in una stanza</p>
+    </div>
+    <h1 class="dsp" style="margin: 12px 0 0; font-size: 44px; line-height: 1.02; letter-spacing: -.012em">
+      <span class="posa" style="--d: 200ms"><span data-suono="1" style="display: block">Ogni angolo,</span></span>
+      <span class="posa" style="--d: 310ms"><span data-suono="2" style="display: block"><em>ogni parete</em></span></span>
+    </h1>
+
+    <div class="posa l" style="--d: 450ms; --d0: {{d0}}; margin-top: 20px">
+      <figure ref="{{ fig.ref }}" data-suono="3" class="lg" style="margin: 0; border-radius: 22px; padding: 14px; --h: {{fig.h}}">
+        <span class="lg-refr f-fig" aria-hidden="true"><span class="lg-img" style="left: {{fig.l}}; top: {{fig.t}}; transform-origin: {{fig.ox}} {{fig.oy}}"></span></span>
+        <span class="lg-tint" aria-hidden="true"></span>
+        <div class="lg-c">
+          <sc-if value="{{ forma.stanza.on }}" hint-placeholder-val="{{ true }}">
+          <svg viewBox="0 0 320 190" width="100%" role="img" aria-label="Pianta della stanza: 8 punti, i quattro angoli e il centro di ogni parete. Il percorso parte dalla porta in basso. Sei al punto 3, al centro della parete destra." style="display: block">
+            <defs>
+              <mask id="routeMask" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="200">
+                <polyline class="route-draw" points="160,188 160,152 288,152 288,92 288,28 160,28 32,28 32,92 32,152 160,152" fill="none" stroke="#fff" stroke-width="6" pathLength="1" stroke-dasharray="1"></polyline>
+              </mask>
+            </defs>
+            <rect x="10" y="10" width="300" height="160" rx="6" fill="rgba(18,15,9,.22)" stroke="rgba(243,235,221,.7)" stroke-width="1.2"></rect>
+            <rect x="143" y="166" width="34" height="8" fill="#3c4526"></rect>
+            <rect x="38" y="28" width="66" height="24" rx="4" fill="none" stroke="rgba(243,235,221,.4)"></rect>
+            <text x="71" y="44" fill="rgba(243,235,221,.75)" font-size="8" text-anchor="middle" font-family="Archivo, sans-serif" letter-spacing="1.5">DIVANO</text>
+            <rect x="196" y="98" width="62" height="34" rx="4" fill="none" stroke="rgba(243,235,221,.4)"></rect>
+            <text x="227" y="118" fill="rgba(243,235,221,.75)" font-size="8" text-anchor="middle" font-family="Archivo, sans-serif" letter-spacing="1.5">TAVOLO</text>
+            <path d="M288 92 L248 92 A40 40 0 0 1 288 52 Z M288 92 L248 92 A40 40 0 0 0 288 132 Z" fill="rgba(217,194,154,.22)"></path>
+            <polyline mask="url(#routeMask)" points="160,188 160,152 288,152 288,92 288,28 160,28 32,28 32,92 32,152 160,152" fill="none" stroke="#D9C29A" stroke-width="1.2" stroke-dasharray="3 4" opacity=".85"></polyline>
+            <g class="pt" style="--i: 1"><circle cx="160" cy="152" r="9" fill="#D9C29A"></circle><text x="160" y="155.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">1</text></g>
+            <g class="pt" style="--i: 2"><circle cx="288" cy="152" r="9" fill="#D9C29A"></circle><text x="288" y="155.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">2</text></g>
+            <g class="pt" style="--i: 3"><circle class="pulse" cx="288" cy="92" r="11" fill="none" stroke="#D9C29A" stroke-width="1.2"></circle><circle cx="288" cy="92" r="10" fill="#F3EBDD"></circle><text x="288" y="95.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">3</text></g>
+            <g class="pt" style="--i: 4"><circle cx="288" cy="28" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="288" y="31.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">4</text></g>
+            <g class="pt" style="--i: 5"><circle cx="160" cy="28" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="160" y="31.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">5</text></g>
+            <g class="pt" style="--i: 6"><circle cx="32" cy="28" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="32" y="31.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">6</text></g>
+            <g class="pt" style="--i: 7"><circle cx="32" cy="92" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="32" y="95.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">7</text></g>
+            <g class="pt" style="--i: 8"><circle cx="32" cy="152" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="32" y="155.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">8</text></g>
+          </svg>
+            <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.45">In ogni punto, un giro piano da parete a parete.</p>
+          </sc-if>
+          <sc-if value="{{ forma.letto.on }}" hint-placeholder-val="{{ false }}">
+          <svg viewBox="0 0 320 190" width="100%" role="img" aria-label="Stanza con letto e armadio: tre punti sono bloccati e si saltano, restano 5 punti." style="display: block">
+            <rect x="10" y="10" width="300" height="160" rx="6" fill="rgba(18,15,9,.22)" stroke="rgba(243,235,221,.7)" stroke-width="1.2"></rect><rect x="143" y="166" width="34" height="8" fill="#3c4526"></rect><rect x="112" y="16" width="96" height="84" rx="4" fill="rgba(243,235,221,.08)" stroke="rgba(243,235,221,.45)"></rect><rect x="120" y="22" width="80" height="16" rx="3" fill="none" stroke="rgba(243,235,221,.4)"></rect><rect x="16" y="16" width="26" height="96" rx="3" fill="none" stroke="rgba(243,235,221,.4)"></rect><text x="160" y="70" fill="rgba(243,235,221,.75)" font-size="8" text-anchor="middle" font-family="Archivo, sans-serif" letter-spacing="1.5">LETTO</text><text x="29" y="64" fill="rgba(243,235,221,.75)" font-size="7" text-anchor="middle" font-family="Archivo, sans-serif" letter-spacing="1.5" transform="rotate(-90 29 64)">ARMADIO</text><defs><mask id="routeBed" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="200"><polyline class="route-draw" points="160,188 160,152 32,152 160,152 288,152 288,92 288,28 288,152 160,152 160,188" fill="none" stroke="#fff" stroke-width="6" pathLength="1" stroke-dasharray="1"></polyline></mask></defs><polyline mask="url(#routeBed)" points="160,188 160,152 32,152 160,152 288,152 288,92 288,28 288,152 160,152 160,188" fill="none" stroke="#D9C29A" stroke-width="1.2" stroke-dasharray="3 4" opacity=".85"></polyline><g aria-hidden="true"><circle cx="160" cy="28" r="8" fill="none" stroke="rgba(243,235,221,.45)" stroke-dasharray="2 2"></circle><path d="M156 24l8 8M164 24l-8 8" stroke="rgba(243,235,221,.55)" stroke-width="1.2"></path></g><g aria-hidden="true"><circle cx="32" cy="28" r="8" fill="none" stroke="rgba(243,235,221,.45)" stroke-dasharray="2 2"></circle><path d="M28 24l8 8M36 24l-8 8" stroke="rgba(243,235,221,.55)" stroke-width="1.2"></path></g><g aria-hidden="true"><circle cx="32" cy="92" r="8" fill="none" stroke="rgba(243,235,221,.45)" stroke-dasharray="2 2"></circle><path d="M28 88l8 8M36 88l-8 8" stroke="rgba(243,235,221,.55)" stroke-width="1.2"></path></g><g class="pt" style="--i: 1"><circle cx="160" cy="152" r="9" fill="#D9C29A"></circle><text x="160" y="155.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">1</text></g><g class="pt" style="--i: 2"><circle cx="32" cy="152" r="9" fill="#D9C29A"></circle><text x="32" y="155.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">2</text></g><g class="pt" style="--i: 3"><circle cx="288" cy="152" r="9" fill="#D9C29A"></circle><text x="288" y="155.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">3</text></g><g class="pt" style="--i: 4"><circle cx="288" cy="92" r="9" fill="#D9C29A"></circle><text x="288" y="95.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">4</text></g><g class="pt" style="--i: 5"><circle cx="288" cy="28" r="9" fill="#D9C29A"></circle><text x="288" y="31.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">5</text></g>
+          </svg>
+            <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.45">Letto e armadio bloccano 3 punti: si saltano. Restano 5 punti.</p>
+          </sc-if>
+          <sc-if value="{{ forma.elle.on }}" hint-placeholder-val="{{ false }}">
+          <svg viewBox="0 0 320 190" width="100%" role="img" aria-label="Stanza a L: ogni angolo e il centro di ogni parete, 12 punti." style="display: block">
+            <path d="M10 10H150V80H310V170H10Z" fill="rgba(18,15,9,.22)" stroke="rgba(243,235,221,.7)" stroke-width="1.2"></path><rect x="88" y="166" width="34" height="8" fill="#3c4526"></rect><rect x="220" y="112" width="58" height="30" rx="4" fill="none" stroke="rgba(243,235,221,.4)"></rect><text x="249" y="130" fill="rgba(243,235,221,.75)" font-size="8" text-anchor="middle" font-family="Archivo, sans-serif" letter-spacing="1.5">TAVOLO</text><defs><mask id="routeL" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="200"><polyline class="route-draw" points="105,188 105,152 28,152 28,90 28,28 80,28 132,28 132,62 168,98 230,98 292,98 292,125 292,152 160,152 105,152 105,188" fill="none" stroke="#fff" stroke-width="6" pathLength="1" stroke-dasharray="1"></polyline></mask></defs><polyline mask="url(#routeL)" points="105,188 105,152 28,152 28,90 28,28 80,28 132,28 132,62 168,98 230,98 292,98 292,125 292,152 160,152 105,152 105,188" fill="none" stroke="#D9C29A" stroke-width="1.2" stroke-dasharray="3 4" opacity=".85"></polyline><g class="pt" style="--i: 1"><circle cx="28" cy="152" r="9" fill="#D9C29A"></circle><text x="28" y="155.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">1</text></g><g class="pt" style="--i: 2"><circle cx="28" cy="90" r="9" fill="#D9C29A"></circle><text x="28" y="93.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">2</text></g><g class="pt" style="--i: 3"><circle cx="28" cy="28" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="28" y="31.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">3</text></g><g class="pt" style="--i: 4"><circle cx="80" cy="28" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="80" y="31.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">4</text></g><g class="pt" style="--i: 5"><circle cx="132" cy="28" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="132" y="31.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">5</text></g><g class="pt" style="--i: 6"><circle cx="132" cy="62" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="132" y="65.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">6</text></g><g class="pt" style="--i: 7"><circle cx="168" cy="98" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="168" y="101.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">7</text></g><g class="pt" style="--i: 8"><circle cx="230" cy="98" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="230" y="101.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">8</text></g><g class="pt" style="--i: 9"><circle cx="292" cy="98" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="292" y="101.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">9</text></g><g class="pt" style="--i: 10"><circle cx="292" cy="125" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="292" y="128.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">10</text></g><g class="pt" style="--i: 11"><circle cx="292" cy="152" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="292" y="155.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">11</text></g><g class="pt" style="--i: 12"><circle cx="160" cy="152" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="160" y="155.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">12</text></g>
+          </svg>
+            <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.45">Forma a L: stessa regola, ogni angolo e il centro di ogni parete. Qui sono 12 punti.</p>
+          </sc-if>
+          <sc-if value="{{ forma.rotonda.on }}" hint-placeholder-val="{{ false }}">
+          <svg viewBox="0 0 320 190" width="100%" role="img" aria-label="Stanza rotonda: senza angoli, quattro punti lungo il bordo, uno per lato." style="display: block">
+            <circle cx="160" cy="92" r="78" fill="rgba(18,15,9,.22)" stroke="rgba(243,235,221,.7)" stroke-width="1.2"></circle><rect x="143" y="166" width="34" height="8" fill="#3c4526"></rect><defs><mask id="routeRound" maskUnits="userSpaceOnUse" x="0" y="0" width="320" height="200"><polyline class="route-draw" points="160,188 160,152 220,92 160,32 100,92 160,152 160,188" fill="none" stroke="#fff" stroke-width="6" pathLength="1" stroke-dasharray="1"></polyline></mask></defs><polyline mask="url(#routeRound)" points="160,188 160,152 220,92 160,32 100,92 160,152 160,188" fill="none" stroke="#D9C29A" stroke-width="1.2" stroke-dasharray="3 4" opacity=".85"></polyline><g class="pt" style="--i: 1"><circle cx="160" cy="152" r="9" fill="#D9C29A"></circle><text x="160" y="155.5" fill="#17130C" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700">1</text></g><g class="pt" style="--i: 2"><circle cx="220" cy="92" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="220" y="95.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">2</text></g><g class="pt" style="--i: 3"><circle cx="160" cy="32" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="160" y="35.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">3</text></g><g class="pt" style="--i: 4"><circle cx="100" cy="92" r="9" fill="#2a2f1c" stroke="rgba(243,235,221,.7)"></circle><text x="100" y="95.5" fill="#F3EBDD" font-size="9" text-anchor="middle" font-family="Archivo, sans-serif">4</text></g>
+          </svg>
+            <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.45">Senza angoli: quattro punti lungo il bordo, uno per lato.</p>
+          </sc-if>
+          <div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px" aria-label="Altre forme di stanza">
+            <button type="button" class="pill" aria-pressed="{{forma.stanza.pressed}}" onClick="{{ forma.stanza.pick }}">Stanza</button>
+            <button type="button" class="pill" aria-pressed="{{forma.letto.pressed}}" onClick="{{ forma.letto.pick }}">Con letto</button>
+            <button type="button" class="pill" aria-pressed="{{forma.elle.pressed}}" onClick="{{ forma.elle.pick }}">A L</button>
+            <button type="button" class="pill" aria-pressed="{{forma.rotonda.pressed}}" onClick="{{ forma.rotonda.pick }}">Rotonda</button>
+          </div>
+        </div>
+      </figure>
+    </div>
+
+    <ol style="list-style: none; margin: 16px 0 0; padding: 0 2px; text-shadow: 0 1px 12px rgba(12,10,6,.5)">
+      <li class="posa" style="--d: 500ms"><span style="display: grid; grid-template-columns: 30px 1fr; gap: 6px; padding: 6px 0; font-size: 15px; line-height: 1.45"><span class="dsp" style="font-style: italic; font-size: 17px; color: #D9C29A">i.</span>Telefono dritto, all’altezza degli occhi.</span></li>
+      <li class="posa" style="--d: 545ms"><span style="display: grid; grid-template-columns: 30px 1fr; gap: 6px; padding: 6px 0; font-size: 15px; line-height: 1.45"><span class="dsp" style="font-style: italic; font-size: 17px; color: #D9C29A">ii.</span>Un punto bloccato da un mobile? Saltalo.</span></li>
+    </ol>
+
+    <nav style="margin-top: auto; display: flex; gap: 10px">
+      <div class="posa" style="--d: 560ms; flex: 1; display: flex">
+        <a ref="{{ back.ref }}" href="Entra.dc.html" class="btn lg" style="flex: 1; --h: {{back.h}}">
+          <span class="lg-refr f-back" aria-hidden="true"><span class="lg-img" style="left: {{back.l}}; top: {{back.t}}; transform-origin: {{back.ox}} {{back.oy}}"></span></span>
+          <span class="lg-tint" aria-hidden="true"></span>
+          <span class="lg-c">Indietro</span>
+        </a>
+      </div>
+      <div class="posa" style="--d: 590ms; flex: 2; display: flex">
+        <a href="Stretta.dc.html" data-suono="4" class="btn btn-p" style="flex: 1">Avanti</a>
+      </div>
+    </nav>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"display":{"editor":"enum","options":["Bodoni Moda","GFS Didot"],"default":"Bodoni Moda","section":"Tipografia"},"veil":{"editor":"range","min":0.2,"max":0.8,"step":0.05,"default":0.45,"section":"Leggibilità"},"animazioni":{"editor":"boolean","default":true,"section":"Movimento"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  componentDidMount() {
+    this._measure = () => this.measure();
+    this.measure();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(this._measure);
+    if (window.ResizeObserver) {
+      this._ro = new ResizeObserver(this._measure);
+      if (this._root) this._ro.observe(this._root);
+      Object.values(this._els || {}).forEach((el) => el && this._ro.observe(el));
+    }
+    this._timer = setTimeout(this._measure, 500);
+    this.linkSound();
+  }
+  componentWillUnmount() {
+    if (this._ro) this._ro.disconnect();
+    clearTimeout(this._timer);
+    clearInterval(this._clock);
+    if (this._bc) this._bc.close();
+    const r = this._root;
+    if (r && this._sfx) Object.keys(this._sfx).forEach((k) => r.removeEventListener(k, this._sfx[k]));
+  }
+
+  // ---- Sound: one switch for music and effects, shared by every screen of the guide. ----
+  // Screens talk over a broadcast channel and remember the switch and the music position: only the screen that
+  // started playing last keeps playing, and the next screen picks the music up where the previous one left it.
+  shared(patch) {
+    let s = { on: this._on === undefined ? true : !!this._on, time: 0 };
+    try { s = Object.assign(s, JSON.parse(localStorage.getItem('guida-suoni-v2')) || {}); } catch (_) {}
+    if (patch) {
+      s = Object.assign(s, patch);
+      try { localStorage.setItem('guida-suoni-v2', JSON.stringify(s)); } catch (_) {}
+    }
+    return s;
+  }
+  linkSound() {
+    try {
+      this._bc = new BroadcastChannel('guida-suoni');
+      this._bc.onmessage = (e) => this.onPeer(e.data || {});
+    } catch (_) {}
+    const r = this._root;
+    if (r) {
+      // The four largest pieces of the screen knock as they set down, top to bottom: tun, tun, ta, ta.
+      this._sfx = {
+        animationend: (e) => {
+          const i = e.animationName === 'posa' && e.target.dataset ? Number(e.target.dataset.suono) : 0;
+          if (i) this.knock(i);
+        },
+        // Each of the 8 points of the plan pops as it appears.
+        animationstart: (e) => {
+          if (e.animationName === 'pt') this.pop(Number(e.target.style.getPropertyValue('--i')) || 1);
+        }
+      };
+      Object.keys(this._sfx).forEach((k) => r.addEventListener(k, this._sfx[k]));
+    }
+    this._on = !!this.shared().on;
+    if (this._on) this.startMusic(this.shared().time);
+    this.forceUpdate();
+  }
+  onPeer(m) {
+    if (m.type === 'claim' && m.at > (this._claimAt || 0)) { this._on = true; this._blocked = false; this.fadeTo(0, true); }
+    if (m.type === 'off') { this._on = false; this.fadeTo(0, true); }
+    this.forceUpdate();
+  }
+  player() {
+    if (!window.__guidaMusica) {
+      const a = new Audio('/_blob/01161e9392d0fd17107c9f4de9095ac2');
+      a.loop = true;
+      a.preload = 'auto';
+      window.__guidaMusica = a;
+    }
+    return window.__guidaMusica;
+  }
+  ctx() {
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!window.__guidaAudio && C) window.__guidaAudio = new C();
+    return window.__guidaAudio || null;
+  }
+  musicOn() { return !!this._on && !this._blocked; }
+  // Fades the music to a level (3 s up, under 1 s down); at 0 it pauses.
+  fadeTo(level, pause) {
+    const a = this.player();
+    clearInterval(a._fade);
+    const step = (level - a.volume) / (level > a.volume ? 60 : 16);
+    if (!step) { if (pause && !level) a.pause(); return; }
+    a._fade = setInterval(() => {
+      const v = Math.min(1, Math.max(0, a.volume + step));
+      a.volume = v;
+      if (step > 0 ? v >= level : v <= level) { clearInterval(a._fade); if (pause && !level) a.pause(); }
+    }, 50);
+  }
+  // Plays from the shared position; only once it really plays does this screen tell the others to fall silent.
+  startMusic(time) {
+    const a = this.player();
+    if (time && Math.abs(a.currentTime - time) > 1) { try { a.currentTime = time; } catch (_) {} }
+    if (a.paused) a.volume = 0;
+    this._blocked = false;
+    const claim = () => {
+      this._claimAt = Date.now();
+      if (this._bc) this._bc.postMessage({ type: 'claim', at: this._claimAt });
+      this.fadeTo(0.45, false);
+    };
+    const p = a.play();
+    if (p && p.then) p.then(claim, () => { this._blocked = true; this.waitForTouch(); this.forceUpdate(); });
+    else claim();
+    clearInterval(this._clock);
+    this._clock = setInterval(() => { if (!a.paused) this.shared({ time: a.currentTime }); }, 1000);
+  }
+  // Sound is on unless switched off, but browsers allow it only after the person touches the page: when autoplay is
+  // refused, the first touch anywhere (the speaker itself excluded, it has its own logic) starts music and effects.
+  waitForTouch() {
+    if (this._waiting) return;
+    this._waiting = true;
+    const wake = (e) => {
+      if (e.target && e.target.closest && e.target.closest('.snd')) return;
+      document.removeEventListener('pointerdown', wake, true);
+      document.removeEventListener('keydown', wake, true);
+      this._waiting = false;
+      if (!this._on) return;
+      const c = this.ctx();
+      if (c && c.state !== 'running') c.resume();
+      this.startMusic(this.shared().time);
+      this.forceUpdate();
+    };
+    document.addEventListener('pointerdown', wake, true);
+    document.addEventListener('keydown', wake, true);
+  }
+  // The speaker: one tap turns music and effects on for every screen, another turns them all off.
+  toggleMusic() {
+    const c = this.ctx();
+    if (c && c.state !== 'running') c.resume();
+    if (this.musicOn()) {
+      this._on = false;
+      clearInterval(this._clock);
+      this.shared({ on: false, time: this.player().currentTime });
+      this.fadeTo(0, true);
+      if (this._bc) this._bc.postMessage({ type: 'off' });
+    } else {
+      this._on = true;
+      this.shared({ on: true });
+      this.startMusic(this.shared().time);
+    }
+    this.forceUpdate();
+  }
+  sfxOn() {
+    const c = this.ctx();
+    return this.musicOn() && c && c.state === 'running' ? c : null;
+  }
+  // The transition sound, drawn with Web Audio (no files): tun-tun-ta-ta, hard wood struck on hard wood.
+  // One knock per large piece (data-suono 1–4): tun, tun, ta, and a last ta a little lower that closes the phrase.
+  knock(i) {
+    const c = this.ctx();
+    if (!c || !this.musicOn()) return;
+    if (c.state !== 'running') { c.resume(); return; }
+    const k = [[520, 0.1, 1], [520, 0.1, 0.9], [780, 0.07, 0.85], [710, 0.075, 0.8]][i - 1];
+    if (!k) return;
+    const out = c.createGain();
+    out.gain.value = 0.22;
+    out.connect(c.destination);
+    this.wood(c, out, c.currentTime + 0.005, k[0], k[1], k[2]);
+  }
+  // A point of the room plan: a small, dry "ba" (a short pop with only a hint of rise), a touch higher for each point.
+  pop(i) {
+    const c = this.ctx();
+    if (!c || !this.musicOn()) return;
+    if (c.state !== 'running') { c.resume(); return; }
+    const t = c.currentTime + 0.005, p = 1 + (i - 1) * 0.04, out = c.createGain();
+    out.gain.value = 0.16;
+    out.connect(c.destination);
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(620 * p, t);
+    o.frequency.exponentialRampToValueAtTime(820 * p, t + 0.015);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.7, t + 0.003);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
+    o.connect(g).connect(out);
+    o.start(t);
+    o.stop(t + 0.06);
+    this.noise(c, out, t, 0.008, 'highpass', 2500, 0.3);
+  }
+  // One knock: a sharp contact click and a hollow body of inharmonic partials that dies away fast, like a wood block.
+  wood(c, out, t, f, decay, level) {
+    [[f, 1, decay], [f * 2.76, 0.35, decay * 0.5], [f * 5.4, 0.12, decay * 0.3]].forEach(([fr, a, d]) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(fr * 1.02, t);
+      o.frequency.exponentialRampToValueAtTime(fr, t + 0.02);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(a * level, t + 0.002);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g).connect(out);
+      o.start(t);
+      o.stop(t + d + 0.05);
+    });
+    this.noise(c, out, t, 0.012, 'bandpass', f * 3, 0.5 * level);
+  }
+  noise(c, out, t, dur, type, freq, level) {
+    const n = Math.floor(c.sampleRate * dur), buf = c.createBuffer(1, n, c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2);
+    const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    s.buffer = buf;
+    f.type = type;
+    f.frequency.value = freq;
+    g.gain.value = level;
+    s.connect(f).connect(g).connect(out);
+    s.start(t);
+  }
+  // Shape pills: choosing one swaps the plan; its route and points play again right away.
+  formaVals() {
+    const cur = (this.state && this.state.forma) || 'stanza';
+    const v = { d0: this._formaPicked ? '150ms' : (this._d0 || '1450ms') };
+    ['stanza', 'letto', 'elle', 'rotonda'].forEach((k) => {
+      v[k] = { on: cur === k, pressed: String(cur === k), pick: () => { this._formaPicked = true; this.setState({ forma: k }); } };
+    });
+    return v;
+  }
+  // Each glass piece shows the meadow from its own position on the screen, so it needs its offset and size.
+  measure() {
+    const root = this._root, els = this._els || {};
+    if (!root) return;
+    const g = {};
+    Object.keys(els).forEach((k) => {
+      const el = els[k];
+      if (!el) return;
+      let x = 0, y = 0, n = el;
+      while (n && n !== root) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+      g[k] = { x: x, y: y, w: el.offsetWidth, h: el.offsetHeight };
+    });
+    const prev = (this.state && this.state.g) || {};
+    if (JSON.stringify(prev) !== JSON.stringify(g)) this.setState({ g: g });
+  }
+  // ox/oy: the piece's pivot (20% from the left, on its base) in the inner copy's coordinates, for the inverse motion.
+  glass(k) {
+    const m = ((this.state && this.state.g) || {})[k] || { x: 0, y: 0, w: 1, h: 1 };
+    return {
+      ref: (el) => { this._els = this._els || {}; this._els[k] = el; },
+      l: (-m.x) + 'px', t: (-m.y) + 'px', w: m.w, h: m.h,
+      ox: (m.x + 0.2 * m.w) + 'px', oy: (m.y + m.h) + 'px'
+    };
+  }
+  renderVals() {
+    const display = this.props.display ?? 'Bodoni Moda';
+    const v = this.props.veil ?? 0.45;
+    const a = (x) => Math.max(0, Math.min(0.96, x)).toFixed(2);
+    return {
+      rootRef: (el) => { this._root = el; },
+      animClass: (this.props.animazioni ?? true) ? 'anim' : '',
+      snd: this.glass('snd'),
+      music: this.musicOn(), musicOff: !this.musicOn(),
+      musicPressed: String(this.musicOn()),
+      musicLabel: this.musicOn() ? 'Spegni la musica' : 'Accendi la musica',
+      toggleMusic: () => this.toggleMusic(),
+      fig: this.glass('fig'), inb: this.glass('inb'), back: this.glass('back'),
+      forma: this.formaVals(), d0: this.formaVals().d0,
+      displayFont: '"' + display + '", "Bodoni Moda", Didot, serif',
+      veilBg: 'linear-gradient(180deg, rgba(18,15,9,' + a(v) + ') 0%, rgba(18,15,9,0) 28%, rgba(18,15,9,0) 68%, rgba(18,15,9,' + a(v + 0.1) + ') 100%)'
+    };
+  }
+}
+</script>
+</body>
+</html>

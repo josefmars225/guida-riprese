@@ -16,7 +16,7 @@ Per ogni cliente, aggiungi l'indirizzo dell'immobile al link, così i suoi video
 ## Cosa c'è
 
 - `index.html`: la guida, costruita da `tools/build.py`. Non va modificata a mano.
-- `design/Main.dc.html`: la guida disegnata nel canvas di Claude, fonte di schermate, testi e animazioni.
+- `design/Main.dc.html`: la guida disegnata nel canvas di Claude (schermate, testi, animazioni), generata da `design/generatore/` (vedi `CLAUDE.md`).
 - `src/`: il motore che fa girare il disegno come pagina (`shell.html`), l'adattamento allo schermo (`fit.js`) e l'invio dei video (`app.js`).
 - `config.js`: l'indirizzo dello script Google che riceve i video.
 - `apps-script/`: lo script da installare nel tuo account Google, con le istruzioni in [`apps-script/LEGGIMI.md`](apps-script/LEGGIMI.md).
