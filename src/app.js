@@ -237,6 +237,29 @@ Component.prototype.feedbackVals = function () {
   return v;
 };
 
+// ---------- sound on iPhone ----------
+// The iPhone does not let a page change the music's volume (it stays at 1): the guide's fade never reached 0 and so
+// never paused. Where the volume cannot be set, the music simply stops at once.
+const _fadeTo = Component.prototype.fadeTo;
+let fixedVolume = null;
+Component.prototype.fadeTo = function (level, pause) {
+  const a = this.player();
+  if (fixedVolume === null) { const v0 = a.volume; a.volume = v0 === 0.5 ? 0.4 : 0.5; fixedVolume = a.volume === v0; a.volume = v0; }
+  if (!fixedVolume) return _fadeTo.call(this, level, pause);
+  clearInterval(a._fade);
+  if (!level && pause) a.pause();
+};
+// After the Camera app (or a call, or the lock screen) the iPhone suspends the page's sound and allows it back only
+// from a touch: the first touch on the guide brings music and effects back, if the speaker is on.
+function wakeSound() {
+  if (!comp || !comp._on || comp.cur().type === 'rec') return;
+  const c = comp.ctx && comp.ctx();
+  if (c && c.state !== 'running') { try { c.resume(); } catch (_) {} }
+  const a = window.__guidaMusica;
+  if (a && a.paused) comp.startMusic(comp.shared().time);
+}
+document.addEventListener('pointerdown', (e) => { if (!(e.target.closest && e.target.closest('.snd'))) wakeSound(); }, true);
+
 // ---------- leaving the browser: the music stops (the client is going to the Camera app) and comes back after ----------
 document.addEventListener('visibilitychange', () => {
   const a = window.__guidaMusica, v = document.querySelector('#board .prato-video');
