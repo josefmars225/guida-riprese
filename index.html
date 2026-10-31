@@ -2012,6 +2012,9 @@ Component.prototype.feedbackVals = function () {
   return v;
 };
 
+// ---------- the music is background music: on iPhone it then follows the silent switch, and never stops other apps' audio ----------
+try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch (_) {}
+
 // ---------- leaving the browser: the music stops (the client is going to the Camera app) and comes back after ----------
 document.addEventListener('visibilitychange', () => {
   const a = window.__guidaMusica, v = document.querySelector('#board .prato-video');
