@@ -22,6 +22,7 @@ function doPost(e) {
     const req = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     if (req.action === 'start') return out(start(req));
     if (req.action === 'feedback') return out(feedback(req));
+    if (req.action === 'report') return out(report(req));
     return out({ ok: false, error: 'azione sconosciuta' });
   } catch (err) {
     return out({ ok: false, error: String(err && err.message || err) });
@@ -62,8 +63,16 @@ function start(req) {
 // Un feedback: una riga nel foglio "Feedback della guida", nella stessa cartella.
 function feedback(req) {
   const rating = Math.max(1, Math.min(5, Math.round(Number(req.rating) || 0)));
-  const sheet = feedbackSheet();
+  const sheet = namedSheet('Feedback della guida', ['Quando', 'Immobile', 'Stelle', 'Commento']);
   sheet.appendRow([new Date(), clean(req.casa, ''), rating, String(req.text || '').slice(0, 1000)]);
+  return { ok: true };
+}
+
+// Un problema visto dalla guida sul telefono di un cliente: una riga nel foglio "Problemi della guida".
+function report(req) {
+  const sheet = namedSheet('Problemi della guida', ['Quando', 'Immobile', 'Cosa', 'Dettagli', 'Telefono e browser', 'Pagina', 'Versione']);
+  const text = (v, n) => String(v || '').replace(/[\u0000-\u001f]+/g, ' ').slice(0, n);
+  sheet.appendRow([new Date(), clean(req.casa, ''), text(req.kind, 80), text(req.detail, 1000), text(req.ua, 300), text(req.page, 300), text(req.build, 20)]);
   return { ok: true };
 }
 
@@ -80,14 +89,15 @@ function casaFolder(name) {
   }
 }
 
-function feedbackSheet() {
+// Il foglio con questo nome nella cartella dei video; la prima volta lo crea, con la riga dei titoli.
+function namedSheet(name, header) {
   const root = DriveApp.getFolderById(FOLDER);
-  const files = root.getFilesByName('Feedback della guida');
+  const files = root.getFilesByName(name);
   if (files.hasNext()) return SpreadsheetApp.open(files.next()).getSheets()[0];
-  const ss = SpreadsheetApp.create('Feedback della guida');
+  const ss = SpreadsheetApp.create(name);
   DriveApp.getFileById(ss.getId()).moveTo(root);
   const sheet = ss.getSheets()[0];
-  sheet.appendRow(['Quando', 'Immobile', 'Stelle', 'Commento']);
+  sheet.appendRow(header);
   sheet.setFrozenRows(1);
   return sheet;
 }

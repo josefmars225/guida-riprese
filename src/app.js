@@ -30,6 +30,25 @@ async function call(action, body) {
   return j;
 }
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+// ---------- problems reported by themselves: what goes wrong on a client's phone lands in «Problemi della guida» ----------
+// At most 12 a visit, each one once; kept and sent again when the connection comes back.
+const SENT_REP = new Set(), REP_Q = [];
+let repCount = 0;
+function report(kind, detail) {
+  const key = kind + '|' + detail;
+  if (!CFG.scriptUrl || SENT_REP.has(key) || repCount >= 12) return;
+  SENT_REP.add(key); repCount++;
+  REP_Q.push({ kind, detail: String(detail || '').slice(0, 1000), casa: casa(), ua: navigator.userAgent, page: location.pathname + location.search, build: window.GUIDA_BUILD || '' });
+  flushReports();
+}
+async function flushReports() {
+  while (REP_Q.length && navigator.onLine !== false) {
+    try { await call('report', REP_Q[0]); REP_Q.shift(); } catch (_) { return; }
+  }
+}
+window.addEventListener('online', flushReports);
+window.addEventListener('error', (e) => report('Errore della pagina', `${e.message || e} · ${(e.filename || '').split('/').pop()}:${e.lineno || ''}`));
+window.addEventListener('unhandledrejection', (e) => report('Errore della pagina', String((e.reason && (e.reason.message || e.reason)) || 'promessa rifiutata')));
 // The phone may close the page while the client is in the Camera app: videos not yet in Drive are kept in the
 // browser's own storage (the file once, the progress after every piece) and carry on when the page comes back.
 const STORE = (() => {
@@ -103,7 +122,11 @@ async function pump() {
   while ((it = Q.find((x) => x.state === 'wait'))) {
     it.state = 'send'; status();
     try { await sendOne(it); it.state = 'ok'; STORE.drop(it.id).catch(() => {}); }
-    catch (_) { it.state = 'wait'; it.errors = (it.errors || 0) + 1; status(true); await wait(Math.min(30000, 4000 * it.errors)); if (!navigator.onLine) break; }
+    catch (e) {
+      it.state = 'wait'; it.errors = (it.errors || 0) + 1; status(true);
+      if (it.errors === 3 && navigator.onLine) report('Invio del video non riuscito', `${it.name} · ${fmtMB(it.size)} · arrivati ${fmtMB(it.sent)} · ${(e && e.message) || e}`);
+      await wait(Math.min(30000, 4000 * it.errors)); if (!navigator.onLine) break;
+    }
     status();
   }
   busy = false; awake(false); status();
@@ -130,7 +153,7 @@ function enqueue(file, sc) {
   const name = `${where} · passo ${String(sc.i + 1).padStart(2, '0')} di ${steps.length} · ${st.title}${ext}`;
   const it = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), file, name, casa: casa() || 'Senza nome', type: file.type || 'video/mp4', size: file.size, sent: 0, state: 'wait' };
   Q.push(it);
-  STORE.add(it).catch(() => {});
+  STORE.add(it).catch((e) => report('Archivio del telefono non disponibile', `${it.name} · ${fmtMB(it.size)} · ${(e && (e.name || e.message)) || e}`));
   status(); pump();
 }
 
@@ -175,7 +198,7 @@ function drawEnd() {
 $('#gal').addEventListener('change', (e) => {
   const f = e.target.files && e.target.files[0], sc = OV.screen;
   if (!f || !sc) return;
-  if (!/^video\//.test(f.type || 'video/')) { drawRec('Questo file non è un video: scegli il video del passo.'); return; }
+  if (!/^video\//.test(f.type || 'video/')) { report('Scelto un file che non è un video', `${f.name} · ${f.type}`); drawRec('Questo file non è un video: scegli il video del passo.'); return; }
   if (CFG.scriptUrl) enqueue(f, sc);
   closeSheet();
   if (comp) comp.nextStep({ type: 'step', key: sc.key, i: sc.i });
@@ -213,9 +236,6 @@ Component.prototype.feedbackVals = function () {
   };
   return v;
 };
-
-// ---------- the music is background music: on iPhone it then follows the silent switch, and never stops other apps' audio ----------
-try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch (_) {}
 
 // ---------- leaving the browser: the music stops (the client is going to the Camera app) and comes back after ----------
 document.addEventListener('visibilitychange', () => {
